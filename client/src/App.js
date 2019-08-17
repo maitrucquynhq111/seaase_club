@@ -16,7 +16,11 @@ class App extends Component{
   componentDidMount(){
     console.log('componentDidMount');
     axios.get(DOMAIN + '/api/helloworld')
-    .then(result => this.setState({greeting: result.data.sayHi}))
+    .then(result => {
+      console.log(result);
+      
+      this.setState({greeting: result.data.sayHi})
+    })
     .catch(err => console.log(err))
   }
 
