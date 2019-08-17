@@ -52,9 +52,9 @@ if(process.env.NODE_ENV === 'production') {
 }
 //build mode
 app.get('*', (req, res) => {  res.sendFile(path.join(__dirname+'/client/build/index.html'));})
-app.get('/', (req, res) => {
-   res.send('hello from server!')
-})
+// app.get('/', (req, res) => {
+//    res.send('hello from server!')
+// })
 app.get('/api/helloworld', (req, res) => {
     // console.log('res: ', res);
     
