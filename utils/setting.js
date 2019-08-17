@@ -1,0 +1,1 @@
+export const MONGODB_URL = "mongodb+srv://admin:admin@cluster0-ulns5.gcp.mongodb.net/test?retryWrites=true&w=majority";
