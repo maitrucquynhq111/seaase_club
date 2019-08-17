@@ -13,10 +13,7 @@ class App extends Component{
     }
   }
 
-  componentDidMount(){
-    console.log('componentDidMount');
-    console.log(DOMAIN + '/api/helloworld');
-    
+  componentDidMount(){    
     axios.get(DOMAIN + '/api/helloworld')
     .then(result => {
       console.log(result);
