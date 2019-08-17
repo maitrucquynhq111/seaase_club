@@ -50,11 +50,13 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 if(process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, 'client/build')));  //  app.get('*', (req, res) => {    res.sendfile(path.join(__dirname = 'client/build/index.html'));  })
 }
+//build mode
+app.get('/', (req, res) => {  res.sendFile(path.join(__dirname+'/client/build/index.html'));})
+
+// app.use('/api', RouterControl);
 app.get('/api/helloworld', (req, res) => {
   res.json({sayHi: 'hello from server, nice to meet you!'})
 })
-//build mode
-app.get('*', (req, res) => {  res.sendFile(path.join(__dirname+'/client/build/index.html'));})
 // app.get('/', (req, res) => {
 //    res.send('hello from server!')
 // })
