@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
+import { DOMAIN } from './utils/setting'
+console.log(DOMAIN);
 
 class App extends Component{
   constructor(props){
@@ -13,7 +15,7 @@ class App extends Component{
 
   componentDidMount(){
     console.log('componentDidMount');
-    axios.get('http://localhost:5000/api/helloworld')
+    axios.get(DOMAIN + '/api/helloworld')
     .then(result => this.setState({greeting: result.data.sayHi}))
     .catch(err => console.log(err))
   }
