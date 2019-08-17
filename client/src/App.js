@@ -15,6 +15,8 @@ class App extends Component{
 
   componentDidMount(){
     console.log('componentDidMount');
+    console.log(DOMAIN + '/api/helloworld');
+    
     axios.get(DOMAIN + '/api/helloworld')
     .then(result => {
       console.log(result);
