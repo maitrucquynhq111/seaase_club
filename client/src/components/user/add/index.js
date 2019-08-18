@@ -32,7 +32,9 @@ class AddSubject extends React.Component {
     }
 
     handleSubmit(){
-        const { data } = this.state;        
+        const { data } = this.state;
+        console.log(DOMAIN + '/api/subjects/create');
+        
         axios({
             method: 'post',
             url: DOMAIN + '/api/subjects/create',
@@ -47,6 +49,8 @@ class AddSubject extends React.Component {
     }
     render() {
         const { classes } = this.props;
+        console.log(this.state.data);
+        
         return (
             <Paper className={classes.root}>
                 <form className={classes.container} noValidate autoComplete="off">    

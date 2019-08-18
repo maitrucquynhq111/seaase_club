@@ -7,6 +7,7 @@ import './App.css';
 import { DOMAIN } from './utils/setting'
 //Components
 import Subject from './pages/subject'
+import User from './pages/user'
 console.log(DOMAIN);
 
 class App extends Component{
@@ -31,7 +32,8 @@ class App extends Component{
     return (
       <div style={{height: '100%'}}>
       <Switch> 
-          <Route path='/' exact render={(props) => <Subject {...props}/>} />
+          <Route path='/subject' exact render={(props) => <Subject {...props}/>} />
+          <Route path='/' exact render={(props) => <User {...props}/>} />
       </Switch>
       </div>
       // <div className="App">

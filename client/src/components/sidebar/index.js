@@ -54,6 +54,18 @@ class Sidebar extends React.Component {
                             </ListItemText>
                         </ListItem>
                     </Link>
+                    <Link to='/subject'>
+                        <ListItem button>
+                            <ListItemIcon className={classes.icon}>
+                                <DashboardIcon />
+                            </ListItemIcon>
+                            <ListItemText>
+                                <Typography variant="body1" className={classes.item}>
+                                    Môn Học
+                                </Typography>
+                            </ListItemText>
+                        </ListItem>
+                    </Link>
                 </List>
             </Drawer>
         );

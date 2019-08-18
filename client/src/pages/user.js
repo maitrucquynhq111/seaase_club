@@ -5,7 +5,7 @@ import { Route, Switch, BrowserRouter,Link } from 'react-router-dom';
 import Header from '../components/header';
 import AddSubject from '../components/subject/add';
 import ListSubject from '../components/subject/list';
-import Subject from '../components/subject';
+import User from '../components/user';
 import Sidebar from '../components/sidebar';
 import { styles } from './styles';
 import { Cookies } from 'react-cookie';
@@ -37,7 +37,7 @@ class SubjectPage extends Component {
         <Sidebar open={open} handleDrawer={this.handleDrawer} {...props} onRef={id => this.sidebar = id} />
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
-          <Subject {...props} />
+          <User {...props} />
           {/* <Switch>
             <Route path="/" exact render={props => <Subject {...props} />} />
           </Switch> */}
