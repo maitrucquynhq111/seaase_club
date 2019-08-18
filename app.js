@@ -62,7 +62,7 @@ if(process.env.NODE_ENV === 'production') {
 //build mode
 app.get('/', (req, res) => {  res.sendFile(path.join(__dirname+'/client/build/index.html'));})
 
-app.use('/api', RouterControl);
+// app.use('/api', RouterControl);
 // app.get('/api/helloworld', (req, res) => {
 //   res.json({sayHi: 'hello from server, nice to meet you!'})
 // })
