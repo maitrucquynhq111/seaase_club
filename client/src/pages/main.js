@@ -36,7 +36,7 @@ class Main extends Component {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Switch>
-            <Route path="/" render={props => <Subject {...props} />} />
+            <Route path="/subject" render={props => <Subject {...props} />} />
           </Switch>
 
         </main>
