@@ -17,11 +17,12 @@ const theme = createMuiTheme({
 
 ReactDOM.render((  
     <MuiThemeProvider theme={theme}>
-    <BrowserRouter>
+        <App {...props} />
+    {/* <BrowserRouter>
         <Switch>
             <Route path='/' render={(props) => <App {...props} />} />
         </Switch>
-    </BrowserRouter>
+    </BrowserRouter> */}
     </MuiThemeProvider>   
 ), document.getElementById('root'));
 // ReactDOM.render(<App />, document.getElementById('root'));
