@@ -13,6 +13,7 @@ import classNames from 'classnames';
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import DashboardIcon from '@material-ui/icons/Dashboard';
+import UserIcon from '@material-ui/icons/People';
 import { styles } from './styles'; 
 
 class Sidebar extends React.Component {
@@ -45,11 +46,11 @@ class Sidebar extends React.Component {
                     <Link to='/'>
                         <ListItem button>
                             <ListItemIcon className={classes.icon}>
-                                <DashboardIcon />
+                                <UserIcon />
                             </ListItemIcon>
                             <ListItemText>
                                 <Typography variant="body1" className={classes.item}>
-                                    Môn Học
+                                    Danh Sách Sinh Viên
                                 </Typography>
                             </ListItemText>
                         </ListItem>

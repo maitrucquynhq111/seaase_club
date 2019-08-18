@@ -170,10 +170,10 @@ class ListMemberCard extends React.Component {
                                 {/* <TableCell padding="checkbox">
                                     <Checkbox checked={isSelected} onClick={event => this.handleClick(event, item._id)}/>
                                 </TableCell> */}
-                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}} onClick={() => this.handleEditComponent(index)}>
+                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}}>
                                     {item.name}
                                 </TableCell>
-                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}} onClick={() => this.handleEditComponent(index)}>
+                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}}>
                                     {item.description}
                                 </TableCell>
                             </TableRow> 

@@ -28,12 +28,12 @@ class Subject extends React.Component {
                 {!this.state.isAdd ?
                     (
                         <Typography variant="h4">
-                            Danh Sách
+                            Danh Sách Môn Học
                         </Typography>
                     )
                     :
                     <Typography variant="h4">
-                        Thêm mới
+                        Thêm Môn Học Mới
                     </Typography>}
                 <div className={classes.frameTitle}>
                     <div>
@@ -56,7 +56,7 @@ class Subject extends React.Component {
                         onRef = {id => this.listCustomer = id}
                     />
                     : 
-                    <AddSubject />
+                    <AddSubject addNew={this.addNew}/>
                 }
             </Grid>
         </Fragment>

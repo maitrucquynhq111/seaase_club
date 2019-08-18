@@ -32,15 +32,22 @@ class AddSubject extends React.Component {
     }
 
     handleSubmit(){
-        const { data } = this.state;        
+        const { data } = this.state;
+        const _this = this;
         axios({
             method: 'post',
             url: DOMAIN + '/api/subjects/create',
             data: data
         })
         .then(result => {
-          console.log(result);
-          
+        //   console.log(result);
+          if(result.status == 200){
+            alert("Tạo thành công")
+            _this.props.addNew()
+          }
+          else{
+              alert("Xảy ra lỗi")
+          }
         //   this.setState({greeting: result.data.sayHi})
         })
         .catch(err => console.log(err))

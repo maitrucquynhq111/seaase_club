@@ -50,7 +50,7 @@ class ListMemberCard extends React.Component {
         this.state = {
             selected: [],
             index: 0,
-            listSubject: [],
+            listUser: [],
             total: 0,
             page: 0,
             rowsPerPage: 5,
@@ -60,12 +60,12 @@ class ListMemberCard extends React.Component {
     componentWillMount(){
         axios({
             method: 'get',
-            url: DOMAIN + '/api/subjects/list',
+            url: DOMAIN + '/api/users/list',
         })
         .then(result => {
           if(result.status == 200){
               this.setState({
-                    listSubject: result.data.data.list,
+                    listUser: result.data.data.list,
                     total: result.data.data.sum,
                 })
           }
@@ -128,11 +128,11 @@ class ListMemberCard extends React.Component {
     };
     render() { 
         const { classes } = this.props;   
-        const { order, orderBy, selected, rowsPerPage, page, listSubject, total } = this.state;
+        const { order, orderBy, selected, rowsPerPage, page, listUser, total } = this.state;
         const listMemberCard = [
             {name: 'Toán', description: 'khó'}
         ];
-        const emptyRows = rowsPerPage - listSubject.length;
+        const emptyRows = rowsPerPage - listUser.length;
         
         return (
         <Paper className={classes.root}>
@@ -148,15 +148,14 @@ class ListMemberCard extends React.Component {
                         orderBy={orderBy}
                         onSelectAllClick={this.handleSelectAllClick}
                         onRequestSort={this.handleRequestSort}
-                        rowCount={listSubject.length}
+                        rowCount={listUser.length}
                     />
                     <TableBody>
-                    {listSubject
+                    {listUser
                         .sort(getSorting(order, orderBy))
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((item, index) => {
                         const isSelected = this.isSelected(item._id);
-                        
                         return (
                            [  
                             <TableRow 
@@ -170,11 +169,17 @@ class ListMemberCard extends React.Component {
                                 {/* <TableCell padding="checkbox">
                                     <Checkbox checked={isSelected} onClick={event => this.handleClick(event, item._id)}/>
                                 </TableCell> */}
-                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}} onClick={() => this.handleEditComponent(index)}>
+                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}}>
                                     {item.name}
                                 </TableCell>
-                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}} onClick={() => this.handleEditComponent(index)}>
-                                    {item.description}
+                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}}>
+                                    {item.class}
+                                </TableCell>
+                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}}>
+                                    {item.address}
+                                </TableCell>
+                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}}>
+                                    {item.birthday}
                                 </TableCell>
                             </TableRow> 
                            ]

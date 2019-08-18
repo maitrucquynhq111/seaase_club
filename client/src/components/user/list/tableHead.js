@@ -12,7 +12,9 @@ import { tableHeadStyles } from './styles';
 // Styles
 const rows = [
     { id: 'name', numeric: false, disablePadding: false, label: 'Tên' },
-    { id: 'description', numeric: false, disablePadding: false, label: 'Mô tả' },
+    { id: 'class', numeric: false, disablePadding: false, label: 'Lớp' },
+    { id: 'address', numeric: false, disablePadding: false, label: 'Địa Chỉ' },
+    { id: 'birthday', numeric: false, disablePadding: false, label: 'Ngày Sinh' },
   ];
 
 class ListMemberCardHead extends React.Component {

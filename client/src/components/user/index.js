@@ -5,11 +5,11 @@ import { withStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
 import React, { Fragment } from 'react';
 
-import AddSubject from './add';
-import ListSubject from './list';
+import AddUser from './add';
+import ListUser from './list';
 import { styles } from './styles';
 
-class Subject extends React.Component {
+class User extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -28,12 +28,12 @@ class Subject extends React.Component {
                 {!this.state.isAdd ?
                     (
                         <Typography variant="h4">
-                            Danh Sách
+                            Danh Sách Sinh Viên
                         </Typography>
                     )
                     :
                     <Typography variant="h4">
-                        Thêm mới
+                        Thêm Sinh Viên
                     </Typography>}
                 <div className={classes.frameTitle}>
                     <div>
@@ -52,11 +52,11 @@ class Subject extends React.Component {
             </div>
             <Grid container spacing={24}>
                 {!this.state.isAdd ?
-                    <ListSubject 
+                    <ListUser
                         onRef = {id => this.listCustomer = id}
                     />
                     : 
-                    <AddSubject />
+                    <AddUser addNew={this.addNew}/>
                 }
             </Grid>
         </Fragment>
@@ -64,4 +64,4 @@ class Subject extends React.Component {
   }
 }
 
-export default (withStyles(styles, { withTheme: true })(Subject));
+export default (withStyles(styles, { withTheme: true })(User));

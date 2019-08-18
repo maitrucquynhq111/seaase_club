@@ -32,29 +32,32 @@ class AddSubject extends React.Component {
     }
 
     handleSubmit(){
-        const { data } = this.state;
-        console.log(DOMAIN + '/api/subjects/create');
-        
+        const { data } = this.state;        
+        const _this = this;
         axios({
             method: 'post',
-            url: DOMAIN + '/api/subjects/create',
+            url: DOMAIN + '/api/users/create',
             data: data
         })
         .then(result => {
-          console.log(result);
-          
-        //   this.setState({greeting: result.data.sayHi})
+        //   console.log(result);
+          if(result.status == 200){
+            alert("Tạo thành công")
+            _this.props.addNew()
+          }
+          else{
+              alert("Xảy ra lỗi")
+          }
         })
         .catch(err => console.log(err))
     }
     render() {
         const { classes } = this.props;
-        console.log(this.state.data);
         
         return (
             <Paper className={classes.root}>
                 <form className={classes.container} noValidate autoComplete="off">    
-                    <Grid container spacing={24}>                   
+                    <Grid container spacing={24}>
                         <Grid item xs={12} sm={6} style={{alignItems: 'flex-end',display: 'flex'}}>
                             <TextField
                                 label="Tên"
@@ -74,11 +77,11 @@ class AddSubject extends React.Component {
                         </Grid>     
                         <Grid item xs={12} sm={6}>
                             <TextField 
-                                label="Mô tả"
-                                name="description"
+                                label="Lớp"
+                                name="class"
                                 margin="dense"
                                 required
-                                value={this.state.data.description}
+                                value={this.state.data.class}
                                 onChange={this.handleChange}
                                 className={classes.textField}
                                 InputProps={{
@@ -93,6 +96,45 @@ class AddSubject extends React.Component {
                             />
                         </Grid>
                     </Grid>   
+                    <Grid container spacing={24}>
+                        <Grid item xs={12} sm={6} style={{alignItems: 'flex-end',display: 'flex'}}>
+                            <TextField
+                                label="Địa chỉ"
+                                name="address"
+                                margin="dense"
+                                required
+                                value={this.state.data.address}
+                                onChange={this.handleChange}
+                                className={classes.textField}  
+                                InputLabelProps={{
+                                    shrink: true,
+                                    classes: {
+                                    root: classes.rootInputLabel
+                                    }
+                                }}
+                            />
+                        </Grid>     
+                        <Grid item xs={12} sm={6}>
+                            <TextField 
+                                label="Sinh Nhật"
+                                name="birthday"
+                                margin="dense"
+                                required
+                                value={this.state.data.birthday}
+                                onChange={this.handleChange}
+                                className={classes.textField}
+                                InputProps={{
+                                    shrink: true,
+                                    classes: { 
+                                        inputType: classes.inputType
+                                    },
+                                }}
+                                InputLabelProps={{
+                                    className:classes.label
+                                }}
+                            />
+                        </Grid>
+                    </Grid>
                     <Grid container justify='flex-end' className={classes.marginTop}>
                         <Button 
                             variant="contained" 
