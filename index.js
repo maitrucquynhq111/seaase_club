@@ -1,18 +1,18 @@
 
-import mongoose from 'mongoose';
-import {MONGODB_URL } from './utils/setting';
-import path from 'path';
-import express from'express'
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import cookieParser from 'cookie-parser';
-import morgan from 'morgan';
+const mongoose = require('mongoose');
+const {MONGODB_URL } = require('./utils/setting');
+const path = require('path');
+const express = require('express')
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
 
 const app = express()
 // load the cookie-parsing middleware
 // app.use(cookieParser())
 const port = process.env.PORT || 5000;
-import RouterControl from './routers';
+const RouterControl = require('./routers');
 console.log('MONGODB_URL', MONGODB_URL);
 
 mongoose.set('useNewUrlParser', true);
@@ -60,9 +60,9 @@ if(process.env.NODE_ENV === 'production') {
 //build mode
 app.get('/', (req, res) => {  res.sendFile(path.join(__dirname+'/client/build/index.html'));})
 
-// app.use(bodyParser.json()); 
-// app.use(bodyParser.urlencoded({ extended: true }));
-// app.use('/api', RouterControl);
+app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/api', RouterControl);
 // app.get('/api/helloworld', (req, res) => {
 //   res.json({sayHi: 'hello from server, nice to meet you!'})
 // })

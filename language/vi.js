@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   accountNotFound: 1001,
   validator:{
     invalidParams:2001,

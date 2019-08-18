@@ -1,6 +1,6 @@
-import langen from './en';
-import langvi from './vi';
+const langen = require('./en');
+const langvi = require('./vi');
 
-export function language(lang) {
+module.exports = function language(lang) {
   return lang === 'vi' ? langvi : langen;
 };

@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   accountNotFound: 'Account not found',
   validator:{
     invalidParams:'Invalid params',

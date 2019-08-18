@@ -1,5 +1,5 @@
-import {Router} from 'express';
-import SubjectsController from '../../controllers/subjects.controller';
+const {Router} = require('express');
+const SubjectsController = require('../../controllers/subjects.controller');
 // import { checkValidationResult, createValidationFor } from '../../middleware/jobs.validator';
 const router = new Router();
 
@@ -10,4 +10,4 @@ router.route('/create').post(
 router.route('/list').get(
     SubjectsController.getList
 )
-export default router
+module.exports = router

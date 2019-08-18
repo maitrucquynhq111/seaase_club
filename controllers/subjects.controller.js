@@ -1,9 +1,9 @@
 'user strict';
-import mongoose from 'mongoose';
-import moment from 'moment';
-import { Subjects } from '../models';
-import { language } from "../language";
-import { _pick } from '../utils/setting';
+const mongoose = require('mongoose');
+const moment = require('moment');
+const { Subjects } = require('../models');
+const { language } = require("../language");
+const { _pick } = require('../utils/setting');
 const ObjectId = mongoose.Types.ObjectId;
 
 exports.create = function (req, res) {
