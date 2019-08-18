@@ -35,9 +35,10 @@ class Main extends Component {
         <Sidebar open={open} handleDrawer={this.handleDrawer} {...props} onRef={id => this.sidebar = id} />
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
-          <Switch>
+          <Subject />
+          {/* <Switch>
             <Route path="/subject" render={props => <Subject {...props} />} />
-          </Switch>
+          </Switch> */}
 
         </main>
       </div>

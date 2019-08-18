@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
-import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
 import { DOMAIN } from './utils/setting';
 import Main from './pages/main';
-console.log(DOMAIN);
 
 class App extends Component{
   constructor(props){
@@ -27,10 +25,11 @@ class App extends Component{
 
   render(){
     return (
-      <div style={{height: '100%'}}>      
-      <Switch>
+      <div style={{height: '100%'}}>    
+      <Main/>  
+      {/* <Switch>
           <Route path='/' render={(props) => <Main {...props}/>} />
-      </Switch>
+      </Switch> */}
       </div>
       // <div className="App">
       //   <header className="App-header">

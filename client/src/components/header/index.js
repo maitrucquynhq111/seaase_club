@@ -47,13 +47,13 @@ class Header extends React.Component {
                         className={classNames(classes.menuButton)}>
                         <MenuIcon />
                     </IconButton>
-                    <Link to='/'>
+                    {/* <Link to='/'> */}
                         <div className={classes.clubName}>
                             <Typography className={classes.clubName} variant="body1" color="inherit" noWrap>
                                 SEAASE 
                             </Typography>
                         </div>
-                    </Link>
+                    {/* </Link> */}
                     <div className={classes.right}>
                         <div className={classes.fullName}>
                             <Typography variant="body1" color="inherit" noWrap >
