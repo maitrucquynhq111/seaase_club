@@ -49,9 +49,6 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-app.use(cors())
-app.use(bodyParser.json()); 
-app.use(bodyParser.urlencoded({ extended: true }));
 //Static file declaration
 app.use(express.static(path.join(__dirname, 'client/build')));
 
@@ -62,6 +59,9 @@ if(process.env.NODE_ENV === 'production') {
 //build mode
 app.get('/', (req, res) => {  res.sendFile(path.join(__dirname+'/client/build/index.html'));})
 
+app.use(cors())
+app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api', RouterControl);
 // app.get('/api/helloworld', (req, res) => {
 //   res.json({sayHi: 'hello from server, nice to meet you!'})
