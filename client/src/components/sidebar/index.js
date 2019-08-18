@@ -42,7 +42,7 @@ class Sidebar extends React.Component {
                 <div className={classes.toolbarIcon}></div>
                 <Divider />
                 <List disablePadding>
-                    {/* <Link to='/'> */}
+                    <Link to='/'>
                         <ListItem button>
                             <ListItemIcon className={classes.icon}>
                                 <DashboardIcon />
@@ -53,7 +53,7 @@ class Sidebar extends React.Component {
                                 </Typography>
                             </ListItemText>
                         </ListItem>
-                    {/* </Link> */}
+                    </Link>
                 </List>
             </Drawer>
         );

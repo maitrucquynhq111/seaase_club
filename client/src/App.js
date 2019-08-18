@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { Route, Switch } from 'react-router-dom';
 
 import logo from './logo.svg';
 import './App.css';
@@ -28,7 +29,11 @@ class App extends Component{
 
   render(){
     return (
-      <Subject/>
+      <div style={{height: '100%'}}>
+      <Switch> 
+          <Route path='/' exact render={(props) => <Subject {...props}/>} />
+      </Switch>
+      </div>
       // <div className="App">
       //   <header className="App-header">
       //     <h1>{this.state.greeting}</h1>

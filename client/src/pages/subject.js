@@ -1,48 +1,48 @@
+import { withStyles } from '@material-ui/core/styles';
 import React, { Component } from 'react';
-import axios from 'axios';
-import { DOMAIN } from '../utils/setting'
+import { Route, Switch, BrowserRouter,Link } from 'react-router-dom';
 
-class Subject extends Component{
-  constructor(props){
+import Header from '../components/header';
+import AddSubject from '../components/subject/add';
+import Sidebar from '../components/sidebar';
+import { styles } from './styles';
+import { Cookies } from 'react-cookie';
+const cookie = new Cookies();
+//Component Child
+class Main extends Component {
+  constructor(props) {
     super(props);
     this.state = {
-      greeting: ''
-    }
+      open: true
+    };
   }
 
-  componentDidMount(){
+  handleDrawer = () => {
+    this.setState({ ...this.state, ...{ open: !this.state.open } }, function () {
+    });
+  };
+  componentDidMount() {
   }
-
-  render(){
+  handleSelected = (selected) => {
+    this.sidebar.handleSelected(selected)
+  }
+  render() {
+    const { classes, t, ...props } = this.props;
+    const { open } = this.state;
     return (
-        <div class="wrapper">
-            <header class="main-header">
-                {/* <!-- Logo --> */}
-                <a href="#" class="logo">
-                    {/* <!-- mini logo for sidebar mini 50x50 pixels --> */}
-                    <span class="logo-mini"><b>S</b>C</span>
-                    {/* <!-- logo for regular state and mobile devices --> */}
-                    <span class="logo-lg"><b>SEAASE</b> Club</span>
-                </a>
-                {/* <!-- Sidebar toggle button--> */}
-                <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
-                <span class="sr-only">Toggle navigation</span>
-                </a>
-                <div class="navbar-custom-menu">
-                    <ul class="nav navbar-nav">
-                        {/* <!-- Messages: style can be found in dropdown.less--> */}
-                        <li class="dropdown messages-menu">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <i class="fa fa-envelope-o"></i>
-                            <span class="label label-success">4</span>
-                        </a>
-                        </li>
-                    </ul>
-                </div>
-            </header>
-        </div>
+      <div className={classes.root}>
+        <Header open={open} handleDrawer={this.handleDrawer} {...props} />
+        <Sidebar open={open} handleDrawer={this.handleDrawer} {...props} onRef={id => this.sidebar = id} />
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+          <Switch>
+            <Route path="/" render={props => <AddSubject {...props} />} />
+          </Switch>
+
+        </main>
+      </div>
     );
+
   }
 }
-
-export default Subject;
+export default withStyles(styles, { withTheme: true })(Main);
