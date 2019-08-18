@@ -4,8 +4,8 @@ const Schema = mongoose.Schema;
 // this will be our data base's data structure 
 const ModalSchema = new Schema(
 {
-    name: {type: String, default: ''},
-    description: {type: String, trim: true, default: ""},
+    name: {type: String, trim: true, default: ''},
+    code: {type: String, trim: true, default: ""},
     createdAt: {type: Number, default: new Date().getTime()},
     updatedAt: {type: Number, default: new Date().getTime()},
 });

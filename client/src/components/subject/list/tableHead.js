@@ -11,8 +11,8 @@ import { tableHeadStyles } from './styles';
 // Sortable Table UI-Material
 // Styles
 const rows = [
-    { id: 'name', numeric: false, disablePadding: false, label: 'Tên' },
-    { id: 'description', numeric: false, disablePadding: false, label: 'Mô tả' },
+    { id: 'name', numeric: false, disablePadding: false, label: 'Code' },
+    { id: 'description', numeric: false, disablePadding: false, label: 'Name' },
   ];
 
 class ListMemberCardHead extends React.Component {

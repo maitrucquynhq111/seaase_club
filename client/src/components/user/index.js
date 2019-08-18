@@ -28,12 +28,12 @@ class User extends React.Component {
                 {!this.state.isAdd ?
                     (
                         <Typography variant="h4">
-                            Danh Sách Sinh Viên
+                            List
                         </Typography>
                     )
                     :
                     <Typography variant="h4">
-                        Thêm Sinh Viên
+                        Add New Student
                     </Typography>}
                 <div className={classes.frameTitle}>
                     <div>

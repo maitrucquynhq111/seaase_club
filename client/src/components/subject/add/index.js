@@ -1,9 +1,9 @@
 import {
      Grid,
      Paper,
-     TextField
+     TextField,
+     Button,
 } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React, { Fragment } from 'react';
@@ -34,6 +34,8 @@ class AddSubject extends React.Component {
     handleSubmit(){
         const { data } = this.state;
         const _this = this;
+        console.log(data);
+        
         axios({
             method: 'post',
             url: DOMAIN + '/api/subjects/create',
@@ -60,11 +62,11 @@ class AddSubject extends React.Component {
                     <Grid container spacing={24}>                   
                         <Grid item xs={12} sm={6} style={{alignItems: 'flex-end',display: 'flex'}}>
                             <TextField
-                                label="Tên"
-                                name="name"
+                                label="Subject Code"
+                                name="code"
                                 margin="dense"
-                                required
-                                value={this.state.data.name}
+                                // required
+                                value={this.state.data.code}
                                 onChange={this.handleChange}
                                 className={classes.textField}  
                                 InputLabelProps={{
@@ -77,11 +79,11 @@ class AddSubject extends React.Component {
                         </Grid>     
                         <Grid item xs={12} sm={6}>
                             <TextField 
-                                label="Mô tả"
-                                name="description"
+                                label="Subject Name"
+                                name="name"
                                 margin="dense"
-                                required
-                                value={this.state.data.description}
+                                // required
+                                value={this.state.data.name}
                                 onChange={this.handleChange}
                                 className={classes.textField}
                                 InputProps={{
@@ -104,7 +106,7 @@ class AddSubject extends React.Component {
                             // onClick={() => console.log('ADD')} 
                             className={classes.button}
                         >
-                            Lưu
+                            Save
                         </Button>
                     </Grid>
                 </form>           

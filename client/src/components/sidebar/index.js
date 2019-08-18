@@ -50,7 +50,7 @@ class Sidebar extends React.Component {
                             </ListItemIcon>
                             <ListItemText>
                                 <Typography variant="body1" className={classes.item}>
-                                    Danh Sách Sinh Viên
+                                    Students
                                 </Typography>
                             </ListItemText>
                         </ListItem>
@@ -62,7 +62,7 @@ class Sidebar extends React.Component {
                             </ListItemIcon>
                             <ListItemText>
                                 <Typography variant="body1" className={classes.item}>
-                                    Môn Học
+                                    Subjects
                                 </Typography>
                             </ListItemText>
                         </ListItem>

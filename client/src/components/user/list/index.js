@@ -1,7 +1,7 @@
 import {
-    Checkbox,
+    Grid,
+    Button,
     Collapse,
-    MenuItem,
     Paper,
     Table,
     TableBody,
@@ -48,13 +48,17 @@ class ListMemberCard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            data: {},
             selected: [],
             index: 0,
             listUser: [],
+            collapse: [],
             total: 0,
             page: 0,
             rowsPerPage: 5,
         };
+        this.handleSubmitEdit = this.handleSubmitEdit.bind(this)
+        this.getList = this.getList.bind(this)
     }
 
     componentWillMount(){
@@ -74,6 +78,14 @@ class ListMemberCard extends React.Component {
     }
 
     componentDidMount() {
+    }
+
+    handleChange = (e) => {
+        let value = e.target.value
+        let name = e.target.name;
+        let data = this.state.data; 
+        data[name] = value; 
+        this.setState({data})
     }
 
     handleClick = (event, id) => {
@@ -123,9 +135,62 @@ class ListMemberCard extends React.Component {
         this.setState({ rowsPerPage: event.target.value , selected: [] });
     };
 
+    handleEditComponent = (id) => {
+        const listUser = this.state.listUser;
+        const collapse = this.state.collapse;
+        for(var i = 0;i <= listUser.length; i++)
+        {
+            if(i === id) {
+              collapse[i] = !collapse[i];
+            }
+            else {
+                collapse[i] = false
+            }
+        }
+        this.setState(collapse);
+    }
+
     isSelected = id => {
         return this.state.selected.indexOf(id) !== -1
     };
+    
+    getList(){
+        const _this = this;        
+        axios({
+            method: 'get',
+            url: DOMAIN + '/api/users/list',
+        })
+        .then(result => {
+          if(result.status == 200){
+              _this.setState({
+                    listUser: result.data.data.list,
+                    total: result.data.data.sum,
+                })
+          }
+        })
+        .catch(err => console.log(err))
+    }
+
+    handleSubmitEdit(id){
+        const { data } = this.state;
+        const _this = this;        
+        axios({
+            method: 'put',
+            url: `${DOMAIN}/api/users/update/${id}`,
+            data: data
+        })
+        .then(result => {
+          if(result.status == 200){
+              _this.getList()
+            alert("Success")
+            _this.handleEditComponent(-1)
+          }
+          else{
+              alert("Something went wrong")
+          }
+        })
+        .catch(err => console.log(err))
+    }
     render() { 
         const { classes } = this.props;   
         const { order, orderBy, selected, rowsPerPage, page, listUser, total } = this.state;
@@ -169,19 +234,143 @@ class ListMemberCard extends React.Component {
                                 {/* <TableCell padding="checkbox">
                                     <Checkbox checked={isSelected} onClick={event => this.handleClick(event, item._id)}/>
                                 </TableCell> */}
-                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}}>
+                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}} onClick={() => this.handleEditComponent(index)}>
                                     {item.name}
                                 </TableCell>
-                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}}>
+                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}} onClick={() => this.handleEditComponent(index)}>
                                     {item.class}
                                 </TableCell>
-                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}}>
-                                    {item.address}
+                                <TableCell scope="row" padding="default" onClick={() => this.handleEditComponent(index)}>
+                                    {item.email}
                                 </TableCell>
-                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}}>
+                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}} onClick={() => this.handleEditComponent(index)}>
                                     {item.birthday}
                                 </TableCell>
-                            </TableRow> 
+                                <TableCell scope="row" padding="default"  onClick={() => this.handleEditComponent(index)}>
+                                    {item.fbLink}
+                                </TableCell>
+                            </TableRow>,
+                            <TableRow key={index} className={classes.tableRowHeight}>
+                              <TableCell colSpan={6} padding={'none'} className = {classes.tableCellEdit}>
+                                <Collapse in={this.state.collapse[index]} unmountOnExit>
+                                    <Paper className={classes.paper}>
+                                        <form className={classes.container} noValidate autoComplete="off">    
+                                            <Grid container spacing={24}>
+                                                <Grid item xs={12} sm={4} style={{alignItems: 'flex-end',display: 'flex'}}>
+                                                    <TextField 
+                                                        label="Name"
+                                                        name="name"
+                                                        margin="dense"
+                                                        required
+                                                        value={!!this.state.data.name?this.state.data.name:item.name}
+                                                        onChange={this.handleChange}
+                                                        className={classes.textField}
+                                                        InputProps={{
+                                                            shrink: true,
+                                                            classes: { 
+                                                                inputType: classes.inputType
+                                                            },
+                                                        }}
+                                                        InputLabelProps={{
+                                                            className:classes.label
+                                                        }}
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={12} sm={4} style={{alignItems: 'flex-end',display: 'flex'}}>
+                                                    <TextField 
+                                                        label="Class"
+                                                        name="class"
+                                                        margin="dense"
+                                                        required
+                                                        value={!!this.state.data.class?this.state.data.class:item.class}
+                                                        onChange={this.handleChange}
+                                                        className={classes.textField}
+                                                        InputProps={{
+                                                            shrink: true,
+                                                            classes: { 
+                                                                inputType: classes.inputType
+                                                            },
+                                                        }}
+                                                        InputLabelProps={{
+                                                            className:classes.label
+                                                        }}
+                                                    />
+                                                </Grid>
+                                                <Grid item xs={12} sm={4} >
+                                                    <TextField 
+                                                        label="Email"
+                                                        name="email"
+                                                        margin="dense"
+                                                        required
+                                                        value={!!this.state.data.email?this.state.data.email:item.email}
+                                                        onChange={this.handleChange}
+                                                        className={classes.textField}
+                                                        InputProps={{
+                                                            shrink: true,
+                                                            classes: { 
+                                                                inputType: classes.inputType
+                                                            },
+                                                        }}
+                                                        InputLabelProps={{
+                                                            className:classes.label
+                                                        }}
+                                                    />
+                                                </Grid>
+                                            </Grid>   
+                                            <Grid container spacing={24}>
+                                                <Grid item xs={12} sm={6} style={{alignItems: 'flex-end',display: 'flex'}}>
+                                                    <TextField
+                                                        label="Facebook"
+                                                        name="fbLink"
+                                                        margin="dense"
+                                                        required
+                                                        value={!!this.state.data.fbLink?this.state.data.fbLink:item.fbLink}
+                                                        onChange={this.handleChange}
+                                                        className={classes.textField}  
+                                                        InputLabelProps={{
+                                                            shrink: true,
+                                                            classes: {
+                                                            root: classes.rootInputLabel
+                                                            }
+                                                        }}
+                                                    />
+                                                </Grid>     
+                                                <Grid item xs={12} sm={6} >
+                                                    <TextField 
+                                                        label="Birthday"
+                                                        name="birthday"
+                                                        margin="dense"
+                                                        required
+                                                        value={!!this.state.data.birthday?this.state.data.birthday:item.birthday}
+                                                        onChange={this.handleChange}
+                                                        className={classes.textField}
+                                                        InputProps={{
+                                                            shrink: true,
+                                                            classes: { 
+                                                                inputType: classes.inputType
+                                                            },
+                                                        }}
+                                                        InputLabelProps={{
+                                                            className:classes.label
+                                                        }}
+                                                    />
+                                                </Grid>
+                                            </Grid>
+                                            <Grid container justify='flex-end' className={classes.marginTop}>
+                                                <Button 
+                                                    variant="contained" 
+                                                    color="primary"
+                                                    onClick={() => this.handleSubmitEdit(item._id)} 
+                                                    className={classes.button}
+                                                >
+                                                    Update
+                                                </Button>
+                                            </Grid>
+                                        </form>
+                                    </Paper>
+                                </Collapse>
+                              </TableCell>
+                            </TableRow>
                            ]
                         );
                     })}

@@ -6,7 +6,8 @@ const ModalSchema = new Schema(
 {
     name: {type: String, default: ''},
     class: {type: String, default: ''},
-    address: {type: String, default: ''},
+    email: {type: String, default: ''},
+    fbLink: {type: String, default: ''},
     birthday: {type: String, default: ''},
     createdAt: {type: Number, default: new Date().getTime()},
     updatedAt: {type: Number, default: new Date().getTime()},

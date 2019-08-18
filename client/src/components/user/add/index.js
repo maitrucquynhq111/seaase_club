@@ -1,9 +1,9 @@
 import {
      Grid,
      Paper,
+     Button,
      TextField
 } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React, { Fragment } from 'react';
@@ -42,11 +42,11 @@ class AddSubject extends React.Component {
         .then(result => {
         //   console.log(result);
           if(result.status == 200){
-            alert("Tạo thành công")
+            alert("Success")
             _this.props.addNew()
           }
           else{
-              alert("Xảy ra lỗi")
+              alert("Something went wrong")
           }
         })
         .catch(err => console.log(err))
@@ -58,26 +58,29 @@ class AddSubject extends React.Component {
             <Paper className={classes.root}>
                 <form className={classes.container} noValidate autoComplete="off">    
                     <Grid container spacing={24}>
-                        <Grid item xs={12} sm={6} style={{alignItems: 'flex-end',display: 'flex'}}>
-                            <TextField
-                                label="Tên"
+                        <Grid item xs={12} sm={4} style={{alignItems: 'flex-end',display: 'flex'}}>
+                            <TextField 
+                                label="Name"
                                 name="name"
                                 margin="dense"
                                 required
                                 value={this.state.data.name}
                                 onChange={this.handleChange}
-                                className={classes.textField}  
-                                InputLabelProps={{
+                                className={classes.textField}
+                                InputProps={{
                                     shrink: true,
-                                    classes: {
-                                    root: classes.rootInputLabel
-                                    }
+                                    classes: { 
+                                        inputType: classes.inputType
+                                    },
+                                }}
+                                InputLabelProps={{
+                                    className:classes.label
                                 }}
                             />
-                        </Grid>     
-                        <Grid item xs={12} sm={6}>
+                        </Grid>
+                        <Grid item xs={12} sm={4} style={{alignItems: 'flex-end',display: 'flex'}}>
                             <TextField 
-                                label="Lớp"
+                                label="Class"
                                 name="class"
                                 margin="dense"
                                 required
@@ -95,15 +98,35 @@ class AddSubject extends React.Component {
                                 }}
                             />
                         </Grid>
+                        <Grid item xs={12} sm={4} >
+                            <TextField 
+                                label="Email"
+                                name="email"
+                                margin="dense"
+                                required
+                                value={this.state.data.email}
+                                onChange={this.handleChange}
+                                className={classes.textField}
+                                InputProps={{
+                                    shrink: true,
+                                    classes: { 
+                                        inputType: classes.inputType
+                                    },
+                                }}
+                                InputLabelProps={{
+                                    className:classes.label
+                                }}
+                            />
+                        </Grid>
                     </Grid>   
                     <Grid container spacing={24}>
                         <Grid item xs={12} sm={6} style={{alignItems: 'flex-end',display: 'flex'}}>
                             <TextField
-                                label="Địa chỉ"
-                                name="address"
+                                label="Facebook"
+                                name="fbLink"
                                 margin="dense"
                                 required
-                                value={this.state.data.address}
+                                value={this.state.data.fbLink}
                                 onChange={this.handleChange}
                                 className={classes.textField}  
                                 InputLabelProps={{
@@ -114,9 +137,9 @@ class AddSubject extends React.Component {
                                 }}
                             />
                         </Grid>     
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={6} >
                             <TextField 
-                                label="Sinh Nhật"
+                                label="Birthday"
                                 name="birthday"
                                 margin="dense"
                                 required
@@ -143,7 +166,7 @@ class AddSubject extends React.Component {
                             // onClick={() => console.log('ADD')} 
                             className={classes.button}
                         >
-                            Lưu
+                            Save
                         </Button>
                     </Grid>
                 </form>           

@@ -7,6 +7,17 @@ export const styles = theme => ({
     width: '100%',
     marginTop: theme.spacing.unit * 3,
   },
+  paper: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'relative',
+      padding: theme.spacing.unit*2,
+  },
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    marginBottom : '8px',
+  },
   table: {
     minWidth: 1020,
   },

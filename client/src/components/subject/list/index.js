@@ -1,7 +1,7 @@
 import {
-    Checkbox,
+    Grid,
     Collapse,
-    MenuItem,
+    Button,
     Paper,
     Table,
     TableBody,
@@ -12,12 +12,11 @@ import {
 } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core/styles';
-import SendIcon from '@material-ui/icons/Send';
 import React from 'react';
+import axios from 'axios'
 import { styles } from './styles';
 import ListMemberCardHead from './tableHead';
 import ListMemberCardToolbar from './tableToolbar';
-import axios from 'axios';
 import { DOMAIN } from '../../../utils/setting'
 
  
@@ -48,34 +47,35 @@ class ListMemberCard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            data: {},
             selected: [],
             index: 0,
             listSubject: [],
+            collapse: [],
             total: 0,
             page: 0,
             rowsPerPage: 5,
         };
-    }
-
-    componentWillMount(){
-        axios({
-            method: 'get',
-            url: DOMAIN + '/api/subjects/list',
-        })
-        .then(result => {
-          if(result.status == 200){
-              this.setState({
-                    listSubject: result.data.data.list,
-                    total: result.data.data.sum,
-                })
-          }
-        })
-        .catch(err => console.log(err))
+        this.handleSubmitEdit = this.handleSubmitEdit.bind(this)
+        this.getList = this.getList.bind(this)
     }
 
     componentDidMount() {
     }
 
+    componentWillReceiveProps(nextProps){
+        if(this.props.listSubject != nextProps.listSubject){
+            this.setState({listSubject: nextProps.listSubject, total: nextProps.total})
+        }
+    }
+
+    handleChange = (e) => {
+        let value = e.target.value
+        let name = e.target.name;
+        let data = this.state.data; 
+        data[name] = value; 
+        this.setState({data})
+    }
     handleClick = (event, id) => {
         const { selected } = this.state;
         const selectedIndex = selected.indexOf(id);
@@ -123,15 +123,65 @@ class ListMemberCard extends React.Component {
         this.setState({ rowsPerPage: event.target.value , selected: [] });
     };
 
+    handleEditComponent = (id) => {
+        const listSubject = this.state.listSubject;
+        const collapse = this.state.collapse;
+        for(var i = 0;i <= listSubject.length; i++)
+        {
+            if(i === id) {
+              collapse[i] = !collapse[i];
+            }
+            else {
+                collapse[i] = false
+            }
+        }
+        this.setState(collapse);
+    }
+
     isSelected = id => {
         return this.state.selected.indexOf(id) !== -1
-    };
+    }
+    
+    getList(){
+        const _this = this;        
+        axios({
+            method: 'get',
+            url: DOMAIN + '/api/subjects/list',
+        })
+        .then(result => {
+          if(result.status == 200){
+              _this.setState({
+                    listSubject: result.data.data.list,
+                    total: result.data.data.sum,
+                })
+          }
+        })
+        .catch(err => console.log(err))
+    }
+
+    handleSubmitEdit(id){
+        const { data } = this.state;
+        const _this = this;        
+        axios({
+            method: 'put',
+            url: `${DOMAIN}/api/subjects/update/${id}`,
+            data: data
+        })
+        .then(result => {
+          if(result.status == 200){
+              _this.getList()
+            alert("Success")
+            _this.handleEditComponent(-1)
+          }
+          else{
+              alert("Something went wrong")
+          }
+        })
+        .catch(err => console.log(err))
+    }
     render() { 
         const { classes } = this.props;   
         const { order, orderBy, selected, rowsPerPage, page, listSubject, total } = this.state;
-        const listMemberCard = [
-            {name: 'Toán', description: 'khó'}
-        ];
         const emptyRows = rowsPerPage - listSubject.length;
         
         return (
@@ -156,7 +206,10 @@ class ListMemberCard extends React.Component {
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((item, index) => {
                         const isSelected = this.isSelected(item._id);
+                        console.log(item);
+                        console.log(this.state.data);
                         
+                        console.log(!!this.state.data.code? this.state.data.code:item.code);
                         return (
                            [  
                             <TableRow 
@@ -170,13 +223,74 @@ class ListMemberCard extends React.Component {
                                 {/* <TableCell padding="checkbox">
                                     <Checkbox checked={isSelected} onClick={event => this.handleClick(event, item._id)}/>
                                 </TableCell> */}
-                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}}>
+                                {/* <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}}></TableCell> */}
+                                <TableCell scope="row" padding="default"  onClick={() => this.handleEditComponent(index)}>
+                                    {item.code}
+                                </TableCell>
+                                <TableCell scope="row" padding="default"  onClick={() => this.handleEditComponent(index)}>
                                     {item.name}
                                 </TableCell>
-                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}}>
-                                    {item.description}
-                                </TableCell>
-                            </TableRow> 
+                            </TableRow> ,
+                            <TableRow key={index} className={classes.tableRowHeight}>
+                              <TableCell colSpan={6} padding={'none'} className = {classes.tableCellEdit}>
+                                <Collapse in={this.state.collapse[index]} unmountOnExit>
+                                    <Paper className={classes.paper}>
+                                        {/* <form className={classes.container} noValidate autoComplete="off">     */}
+                                            <Grid container spacing={24}>                   
+                                                <Grid item xs={12} sm={6} style={{alignItems: 'flex-end',display: 'flex'}}>
+                                                    <TextField
+                                                        label="Subject Code"
+                                                        name="code"
+                                                        margin="dense"
+                                                        // required
+                                                        value={!!this.state.data.code?this.state.data.code:item.code}
+                                                        onChange={this.handleChange}
+                                                        className={classes.textField}  
+                                                        InputLabelProps={{
+                                                            shrink: true,
+                                                            classes: {
+                                                            root: classes.inputType
+                                                            }
+                                                        }}
+                                                    />
+                                                </Grid>     
+                                                <Grid item xs={12} sm={6}>
+                                                    <TextField 
+                                                        label="Subject Name"
+                                                        name="name"
+                                                        margin="dense"
+                                                        // required
+                                                        value={!!this.state.data.name? this.state.data.name:item.name}
+                                                        onChange={this.handleChange}
+                                                        className={classes.textField}
+                                                        InputProps={{
+                                                            shrink: true,
+                                                            classes: { 
+                                                                inputType: classes.inputType
+                                                            },
+                                                        }}
+                                                        // InputLabelProps={{
+                                                        //     className:classes.label
+                                                        // }}
+                                                    />
+                                                </Grid>
+                                            </Grid>   
+                                            <Grid container justify='flex-end' className={classes.marginTop}>
+                                                <Button 
+                                                    variant="contained" 
+                                                    color="primary"
+                                                    onClick={() => this.handleSubmitEdit(item._id)} 
+                                                    // onClick={() => console.log('ADD')} 
+                                                    className={classes.button}
+                                                >
+                                                    Update
+                                                </Button>
+                                            </Grid>
+                                        {/* </form>*/}
+                                    </Paper>
+                                </Collapse>
+                              </TableCell>
+                            </TableRow>
                            ]
                         );
                     })}

@@ -11,10 +11,11 @@ import { tableHeadStyles } from './styles';
 // Sortable Table UI-Material
 // Styles
 const rows = [
-    { id: 'name', numeric: false, disablePadding: false, label: 'Tên' },
-    { id: 'class', numeric: false, disablePadding: false, label: 'Lớp' },
-    { id: 'address', numeric: false, disablePadding: false, label: 'Địa Chỉ' },
-    { id: 'birthday', numeric: false, disablePadding: false, label: 'Ngày Sinh' },
+    { id: 'name', numeric: false, disablePadding: false, label: 'Name' },
+    { id: 'class', numeric: false, disablePadding: false, label: 'Class' },
+    { id: 'email', numeric: false, disablePadding: false, label: 'Email̉' },
+    { id: 'birthday', numeric: false, disablePadding: false, label: 'Birthday' },
+    { id: 'fbLink', numeric: false, disablePadding: false, label: 'Facebook' },
   ];
 
 class ListMemberCardHead extends React.Component {

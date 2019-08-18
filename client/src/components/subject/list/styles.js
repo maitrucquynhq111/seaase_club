@@ -7,6 +7,30 @@ export const styles = theme => ({
     width: '100%',
     marginTop: theme.spacing.unit * 3,
   },
+  paper: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'relative',
+      padding: theme.spacing.unit*2,
+  },
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    marginBottom : '8px',
+  },
+  textField: {
+    marginRight: theme.spacing.unit,
+    width: '100%',
+  }, 
+  label : {
+    fontWeight :410
+  },
+  button: {
+    float: 'right',
+  },
+  inputType: {
+    height: 'unset'
+  },
   table: {
     minWidth: 1020,
   },
@@ -34,9 +58,6 @@ export const styles = theme => ({
     cursor: 'pointer',
     fontSize: '0.6125rem',
     color: '#3f51b5',
-  },
-  textField: {
-    width: '100%',
   },
   customRoot: {
     width: '100%',
