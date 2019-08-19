@@ -7,8 +7,22 @@ import {
     TablePagination,
     TableRow,
     IconButton,
-    Icon
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    FormControl,
+    Select,
+    MenuItem,
+    InputLabel,
+    Typography,
 } from '@material-ui/core';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import Divider from '@material-ui/core/Divider';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import { withStyles } from '@material-ui/core/styles';
@@ -18,7 +32,7 @@ import { styles } from './styles';
 import ListMemberCardHead from './tableHead';
 import ListMemberCardToolbar from './tableToolbar';
 import FormEdit from './formEdit';
-import Dialog from '../../dialog';
+import DialogForm from '../../dialog';
 import { DOMAIN } from '../../../utils/setting'
 
  
@@ -54,14 +68,32 @@ class ListMemberCard extends React.Component {
             selected: [],
             index: 0,
             listSubject: [],
+            listUserSubject: [],
+            listUser: [],
             collapse: [],
             total: 0,
             page: 0,
             rowsPerPage: 5,
+            openDialog: false
         };
         this.handleSubmitEdit = this.handleSubmitEdit.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.getList = this.getList.bind(this);
+    }
+
+    componentWillMount(){
+        axios({
+            method: 'get',
+            url: DOMAIN + '/api/users/list',
+        })
+        .then(result => {
+          if(result.status == 200){
+              this.setState({
+                    listUser: result.data.data.list,
+                })
+          }
+        })
+        .catch(err => console.log(err))
     }
 
     componentDidMount() {
@@ -71,6 +103,14 @@ class ListMemberCard extends React.Component {
         if(this.props.listSubject != nextProps.listSubject){
             this.setState({listSubject: nextProps.listSubject, total: nextProps.total})
         }
+    }
+
+    handleClickOpen = () => {
+        this.setState({openDialog:true, newSubject: {}})
+    }
+
+    handleClose = () => {
+        this.setState({openDialog:false})
     }
 
     handleChange = (e) => {
@@ -131,6 +171,23 @@ class ListMemberCard extends React.Component {
         this.setState({idUser: id}, function(){
         this.mDialog.handleDialogOpen()
       })
+    }
+
+    handleOpenListStudent = (id) => {
+        const _this = this;        
+        axios({
+            method: 'get',
+            url: `${DOMAIN}/api/userSubjects/getBySubject/${id}`,
+        })
+        .then(result => {
+          if(result.status == 200){
+              _this.setState({
+                    listUserSubject: result.data.data,
+                    openDialog: true
+                })
+          }
+        })
+        .catch(err => console.log(err))
     }
 
     handleEditComponent = (id) => {
@@ -213,12 +270,12 @@ class ListMemberCard extends React.Component {
     }
     render() { 
         const { classes } = this.props;   
-        const { order, orderBy, selected, rowsPerPage, page, listSubject, total } = this.state;
+        const { order, orderBy, selected, rowsPerPage, page, listSubject, listUserSubject, listUser, total, openDialog } = this.state;
         const emptyRows = rowsPerPage - listSubject.length;
         
         return (
         <Paper className={classes.root}>
-            <Dialog
+            <DialogForm
                 onRef={dialog => (this.mDialog = dialog)} 
                 disagree="Cancel"
                 agree="Delete"
@@ -226,10 +283,50 @@ class ListMemberCard extends React.Component {
                 content="Do you want to delete this subject from list?"
                 action={this.handleDelete} 
             />
-            {/* <ListMemberCardToolbar 
-                numSelected={selected.length} 
-                handleDelete={() => this.handleOpenDialog(t('membercard_list_delete'), t('membercard_list_do_you_want_to_delete_this_card_from_list'))}
-            /> */}
+            <Dialog 
+                open={openDialog} 
+                onClose={this.handleClose} 
+                aria-labelledby="form-dialog-title"
+                classes={{
+                    paperWidthSm: classes.paperWidthSm,
+                }}
+            >
+                <DialogTitle id="form-dialog-title">List Student</DialogTitle>
+                <DialogContent>
+                    <List className={classes.rootList}>
+                        {listUserSubject.map((item, index) => {
+                            console.log(item);
+                            let user = listUser.find(element => element._id == item.userId)
+                            return(
+                                <React.Fragment key={index}>
+                                    <ListItem alignItems="flex-start">
+                                        {/* <ListItemAvatar>
+                                        <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                                        </ListItemAvatar> */}
+                                        <ListItemText
+                                        primary={user.name}
+                                        secondary={[
+                                            <React.Fragment>
+                                                <p><b>Class: </b>{user.class}</p>
+                                                <p><b>Email: </b>{user.email}</p>
+                                                <p><b>Semester: </b>{item.semester}</p>
+                                            </React.Fragment>
+                                        ]}
+                                        />
+                                    </ListItem>
+                                    <Divider component="li" />
+                                </React.Fragment>
+
+                            )
+                        })}
+                    </List>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={this.handleClose} color="primary">
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
             <div className={classes.tableWrapper}>
                 <Table className={classes.table + ' table-card'} aria-labelledby="tableTitle">
                     <ListMemberCardHead
@@ -246,10 +343,6 @@ class ListMemberCard extends React.Component {
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((item, index) => {
                         const isSelected = this.isSelected(item._id);
-                        console.log(item);
-                        console.log(this.state.data);
-                        
-                        console.log(!!this.state.data.code? this.state.data.code:item.code);
                         return (
                            [  
                             <TableRow 
@@ -271,10 +364,7 @@ class ListMemberCard extends React.Component {
                                     {item.name}
                                 </TableCell>
                                 <TableCell  scope="row" padding="default" style={{textAlign: 'center'}}> 
-                                    {/* <Icon classes={{root: classes.iconCopy}}>
-                                        file_copy
-                                    </Icon> */}
-                                    <IconButton> 
+                                    <IconButton onClick={() => this.handleOpenListStudent(item._id)} > 
                                         <CopyIcon/>
                                     </IconButton>
                                 </TableCell> 
