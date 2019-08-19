@@ -12,9 +12,6 @@ export const styles = theme => ({
     // maxWidth: 360,
     backgroundColor: theme.palette.background.paper,
   },
-  inline: {
-    display: 'inline',
-  },
   paper: {
       justifyContent: 'center',
       alignItems: 'center',

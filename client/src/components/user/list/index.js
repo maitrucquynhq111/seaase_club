@@ -1,6 +1,5 @@
 import {
     Grid,
-    Button,
     Collapse,
     Paper,
     Table,
@@ -10,16 +9,26 @@ import {
     TableRow,
     TextField,
     IconButton,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
+    List,
+    ListItem,
+    Divider,
+    ListItemText
 } from '@material-ui/core';
 import axios from 'axios';
 import { withStyles } from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
+import CopyIcon from '@material-ui/icons/FileCopy';
 import React from 'react';
 import { styles } from './styles';
 import ListMemberCardHead from './tableHead';
 import ListMemberCardToolbar from './tableToolbar';
 import FormEdit from './formEdit';
-import Dialog from '../../dialog';
+import DialogForm from '../../dialog';
 import { DOMAIN } from '../../../utils/setting'
 
  
@@ -55,10 +64,13 @@ class ListUsers extends React.Component {
             selected: [],
             index: 0,
             listUser: [],
+            listSubject: [],
+            listUserSubject: [],
             collapse: [],
             total: 0,
             page: 0,
             rowsPerPage: 5,
+            openDialog: false
         };
         this.handleSubmitEdit = this.handleSubmitEdit.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
@@ -79,9 +91,29 @@ class ListUsers extends React.Component {
           }
         })
         .catch(err => console.log(err))
+
+        axios({
+            method: 'get',
+            url: DOMAIN + '/api/subjects/list',
+        })
+        .then(result => {
+          if(result.status == 200){
+              this.setState({
+                    listSubject: result.data.data.list,
+                })
+          }
+        })
+        .catch(err => console.log(err))
+    }
+    componentDidMount() {
     }
 
-    componentDidMount() {
+    handleClickOpen = () => {
+        this.setState({openDialog:true, newSubject: {}})
+    }
+
+    handleClose = () => {
+        this.setState({openDialog:false})
     }
 
     handleChange = (e) => {
@@ -143,6 +175,25 @@ class ListUsers extends React.Component {
         this.setState({idUser: id}, function(){
         this.mDialog.handleDialogOpen()
       })
+    }
+
+    handleOpenListStudent = (id) => {
+        const _this = this;        
+        axios({
+            method: 'get',
+            url: `${DOMAIN}/api/userSubjects/getByUser/${id}`,
+        })
+        .then(result => {
+          if(result.status == 200){
+              console.log(result);
+              
+              _this.setState({
+                    listUserSubject: result.data.data,
+                    openDialog: true
+                })
+          }
+        })
+        .catch(err => console.log(err))
     }
 
     handleEditComponent = (id) => {
@@ -225,12 +276,12 @@ class ListUsers extends React.Component {
     }
     render() { 
         const { classes } = this.props;   
-        const { order, orderBy, selected, rowsPerPage, page, listUser, total } = this.state;
+        const { order, orderBy, selected, rowsPerPage, page, listUser, listSubject, listUserSubject, total, openDialog } = this.state;
         const emptyRows = rowsPerPage - listUser.length;
         
         return (
         <Paper className={classes.root}>
-            <Dialog
+            <DialogForm
                 onRef={dialog => (this.mDialog = dialog)} 
                 disagree="Cancel"
                 agree="Delete"
@@ -238,6 +289,44 @@ class ListUsers extends React.Component {
                 content="Do you want to delete this user from list?"
                 action={this.handleDelete} 
             />
+            <Dialog 
+                open={openDialog} 
+                onClose={this.handleClose} 
+                aria-labelledby="form-dialog-title"
+                classes={{
+                    paperWidthSm: classes.paperWidthSm,
+                }}
+            >
+                <DialogTitle id="form-dialog-title">List Subject</DialogTitle>
+                <DialogContent>
+                    <List className={classes.rootList}>
+                        {listUserSubject.map((item, index) => {
+                            let subject = listSubject.find(element => element._id == item.subjectId)                            
+                            return(
+                                <React.Fragment key={index}>
+                                    <ListItem alignItems="flex-start">
+                                        <ListItemText
+                                        primary={subject.name}
+                                        secondary={[
+                                            <React.Fragment>
+                                                <p><b>Subject Code: </b>{subject.code}</p>
+                                            </React.Fragment>
+                                        ]}
+                                        />
+                                    </ListItem>
+                                    <Divider component="li" />
+                                </React.Fragment>
+
+                            )
+                        })}
+                    </List>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={this.handleClose} color="primary">
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
             {/* <ListMemberCardToolbar 
                 numSelected={selected.length} 
                 handleDelete={() => this.handleOpenDialog(t('membercard_list_delete'), t('membercard_list_do_you_want_to_delete_this_card_from_list'))}
@@ -289,6 +378,11 @@ class ListUsers extends React.Component {
                                 <TableCell scope="row" padding="default"  onClick={() => this.handleEditComponent(index)}>
                                     {item.fbLink}
                                 </TableCell>
+                                <TableCell  scope="row" padding="default" style={{textAlign: 'center'}}> 
+                                    <IconButton onClick={() => this.handleOpenListStudent(item._id)} > 
+                                        <CopyIcon/>
+                                    </IconButton>
+                                </TableCell> 
                                 <TableCell  scope="row" padding="default" style={{textAlign: 'center'}}> 
                                     <IconButton onClick={() => this.handleOpenDialog(item._id)} > 
                                         <DeleteIcon/>

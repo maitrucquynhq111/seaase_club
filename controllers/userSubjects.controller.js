@@ -53,27 +53,28 @@ exports.findByUserId = function (req, res) {
         userId: id
     })
     .then(result => {
-        let promise = []
-        if(result.length > 0){
-            result.forEach(element => {
-                promise.push(
-                    Subjects.findOne({
-                        _id: element.subjectId
-                    })
-                )
-            })
-            Promise.all(promise)
-            .then(result_find_subject => {
-                console.log(result_find_user);
-                res.json({ success: true, data: result_find_subject, err: null, message: null })  
-            })
-            .catch(err => {
-                res.json({ success: false, data: null, err: err, message: err.message })
-            })
-        }
-        else{
-            res.json({ success: true, data: [], err: null, message: null })
-        }
+        res.json({ success: true, data: result, err: null, message: null }) 
+        // let promise = []
+        // if(result.length > 0){
+        //     result.forEach(element => {
+        //         promise.push(
+        //             Subjects.findOne({
+        //                 _id: element.subjectId
+        //             })
+        //         )
+        //     })
+        //     Promise.all(promise)
+        //     .then(result_find_subject => {
+        //         console.log(result_find_user);
+        //         res.json({ success: true, data: result_find_subject, err: null, message: null })  
+        //     })
+        //     .catch(err => {
+        //         res.json({ success: false, data: null, err: err, message: err.message })
+        //     })
+        // }
+        // else{
+        //     res.json({ success: true, data: [], err: null, message: null })
+        // }
     })
     .catch(err => {
         res.json({ success: false, data: null, err: err, message: err.message })

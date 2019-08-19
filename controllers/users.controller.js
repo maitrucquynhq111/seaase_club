@@ -17,7 +17,6 @@ exports.create = function (req, res) {
             item.userId = result_inser_user._id
             return item
         })
-        console.log(entity.listUserSubject.length);
         if(entity.listUserSubject.length > 0){
             
             UserSubjects.insertMany(entity.listUserSubject)
@@ -107,7 +106,15 @@ exports.delete = function (req, res) {
                 _id: id,
             })
             .then(result_delete => {
-                res.json({ success: true, data: result_delete, err: null, message: null })
+                UserSubjects.remove({
+                    userId: id
+                })
+                .then(res_delete => {
+                    res.json({ success: true, data: result_delete, err: null, message: null })
+                })
+                .catch(err => {
+                    res.json({ success: false, data: null, err: err, message: err.message })
+                })
             })
             .catch(err => {
                 res.json({ success: false, data: null, err: err, message: err.message })

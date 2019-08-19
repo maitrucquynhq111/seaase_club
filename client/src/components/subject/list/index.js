@@ -12,17 +12,11 @@ import {
     DialogContent,
     DialogActions,
     Button,
-    FormControl,
-    Select,
-    MenuItem,
-    InputLabel,
-    Typography,
+    List,
+    ListItem,
+    Divider,
+    ListItemText
 } from '@material-ui/core';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Divider from '@material-ui/core/Divider';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import { withStyles } from '@material-ui/core/styles';

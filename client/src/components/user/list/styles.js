@@ -7,11 +7,20 @@ export const styles = theme => ({
     width: '100%',
     marginTop: theme.spacing.unit * 3,
   },
+  rootList: {
+    width: '100%',
+    // maxWidth: 360,
+    backgroundColor: theme.palette.background.paper,
+  },
   paper: {
       justifyContent: 'center',
       alignItems: 'center',
       position: 'relative',
       padding: theme.spacing.unit*2,
+  },
+  paperWidthSm: {
+      width: '80%',
+      maxWidth: 'unset',
   },
   container: {
     display: 'flex',
