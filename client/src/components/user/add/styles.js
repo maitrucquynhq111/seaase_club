@@ -10,6 +10,26 @@ export const styles = theme => ({
       flexWrap: 'wrap',
       marginBottom : '8px',
     },
+    labelSubject: {
+      fontSize: '1rem',
+      fontWeight :'bold',
+      marginTop: '16px',
+      marginBottom: '16px'
+    },
+    textAddSubject: {
+      fontSize: '1rem',
+      color: '#1976d2',
+      marginTop: '16px',
+      marginBottom: '16px',
+      cursor: 'pointer',
+    },
+    formControl: {
+      margin: theme.spacing(1),
+      minWidth: 120,
+    },
+    selectEmpty: {
+      marginTop: theme.spacing(2),
+    },
     title : {
       fontSize : '1.5rem',
     },
@@ -22,7 +42,7 @@ export const styles = theme => ({
     },
     button: {
       float: 'right',
-    },   
+    },
     image : {
       height: '25vw',
       width: '45vw',

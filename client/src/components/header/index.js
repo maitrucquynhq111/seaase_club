@@ -10,7 +10,7 @@ import classNames from 'classnames';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { styles } from './styles';
-
+import logo from '../../logo.png'
 class Header extends React.Component {
     constructor(props) {
         super(props);
@@ -48,10 +48,15 @@ class Header extends React.Component {
                         <MenuIcon />
                     </IconButton>
                     <Link to='/'>
-                        <div className={classes.clubName}>
-                            <Typography className={classes.clubName} variant="body1" color="inherit" noWrap>
-                                SEAASE 
-                            </Typography>
+                        <div className={classes.spaName}>
+                            {/* <div className={classes.logo}>
+                                <img src={logo}/>
+                            </div> */}
+                            <div className={classes.clubName}>
+                                <Typography className={classes.clubName} variant="body1" color="inherit" noWrap>
+                                    SEAASE 
+                                </Typography>
+                            </div>
                         </div>
                     </Link>
                     <div className={classes.right}>

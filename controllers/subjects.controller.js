@@ -56,7 +56,6 @@ exports.update = function (req, res) {
     })
     .then(result => {
         if (result) {
-            entity.updatedAt = new Date().getTime();
             Subjects.findOneAndUpdate({
                 _id: id,
             }, {
@@ -71,6 +70,33 @@ exports.update = function (req, res) {
         }
         else {
             res.json({ success: false, data: null, err: language('vi').contactsNotFound, message: language('en').contactsNotFound })
+        }
+    })
+    .catch(err => {        
+        res.json({ success: false, data: null, err: err, message: err.message })
+    })
+}
+
+exports.delete = function (req, res) {
+    let { id } = req.params;
+    let entity = req.body;
+    Subjects.findOne({
+        _id: id
+    })
+    .then(result => {
+        if (result) {
+            Subjects.remove({
+                _id: id,
+            })
+            .then(result_delete => {
+                res.json({ success: true, data: result_delete, err: null, message: null })
+            })
+            .catch(err => {
+                res.json({ success: false, data: null, err: err, message: err.message })
+            })
+        }
+        else {
+            res.json({ success: false, data: null, err: language('vi').userNotFound, message: language('en').userNotFound })
         }
     })
     .catch(err => {        

@@ -1,5 +1,5 @@
 module.exports = {
-  accountNotFound: 'Account not found',
+  userNotFound: 'User not found',
   validator:{
     invalidParams:'Invalid params',
     passwordRequire:'Password is required',

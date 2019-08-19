@@ -10,12 +10,10 @@ router.route('/create').post(
 router.route('/list').get(
     SubjectsController.getList
 )
-router.route('/update/:id')
-// .delete(
-//     createValidationFor('delete'),
-//     checkValidationResult,
-//     ContactsController.delete
-// )
+router.route('/:id')
+.delete(
+    SubjectsController.delete
+)
 .put(
     SubjectsController.update
 )

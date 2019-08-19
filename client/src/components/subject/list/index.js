@@ -1,22 +1,24 @@
 import {
-    Grid,
     Collapse,
-    Button,
     Paper,
     Table,
     TableBody,
     TableCell,
     TablePagination,
     TableRow,
-    TextField,
+    IconButton,
+    Icon
 } from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+import CopyIcon from '@material-ui/icons/FileCopy';
 import { withStyles } from '@material-ui/core/styles';
 import React from 'react';
 import axios from 'axios'
 import { styles } from './styles';
 import ListMemberCardHead from './tableHead';
 import ListMemberCardToolbar from './tableToolbar';
+import FormEdit from './formEdit';
+import Dialog from '../../dialog';
 import { DOMAIN } from '../../../utils/setting'
 
  
@@ -48,6 +50,7 @@ class ListMemberCard extends React.Component {
         super(props);
         this.state = {
             data: {},
+            idUser: '',
             selected: [],
             index: 0,
             listSubject: [],
@@ -56,8 +59,9 @@ class ListMemberCard extends React.Component {
             page: 0,
             rowsPerPage: 5,
         };
-        this.handleSubmitEdit = this.handleSubmitEdit.bind(this)
-        this.getList = this.getList.bind(this)
+        this.handleSubmitEdit = this.handleSubmitEdit.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
+        this.getList = this.getList.bind(this);
     }
 
     componentDidMount() {
@@ -122,6 +126,12 @@ class ListMemberCard extends React.Component {
     handleChangeRowsPerPage = async event => {
         this.setState({ rowsPerPage: event.target.value , selected: [] });
     };
+    
+    handleOpenDialog = (id) => {      
+        this.setState({idUser: id}, function(){
+        this.mDialog.handleDialogOpen()
+      })
+    }
 
     handleEditComponent = (id) => {
         const listSubject = this.state.listSubject;
@@ -159,12 +169,34 @@ class ListMemberCard extends React.Component {
         .catch(err => console.log(err))
     }
 
+    handleDelete(){
+        const { data, idUser } = this.state;
+        const _this = this;
+             
+        axios({
+            method: 'delete',
+            url: `${DOMAIN}/api/subjects/${idUser}`,
+            data: data
+        })
+        .then(result => {
+          if(result.status == 200){
+              _this.getList()
+              _this.mDialog.handleDialogClose()
+            alert("Success")
+          }
+          else{
+              alert("Something went wrong")
+          }
+        })
+        .catch(err => console.log(err))
+    }
+
     handleSubmitEdit(id){
         const { data } = this.state;
         const _this = this;        
         axios({
             method: 'put',
-            url: `${DOMAIN}/api/subjects/update/${id}`,
+            url: `${DOMAIN}/api/subjects/${id}`,
             data: data
         })
         .then(result => {
@@ -186,6 +218,14 @@ class ListMemberCard extends React.Component {
         
         return (
         <Paper className={classes.root}>
+            <Dialog
+                onRef={dialog => (this.mDialog = dialog)} 
+                disagree="Cancel"
+                agree="Delete"
+                title ="Notice"
+                content="Do you want to delete this subject from list?"
+                action={this.handleDelete} 
+            />
             {/* <ListMemberCardToolbar 
                 numSelected={selected.length} 
                 handleDelete={() => this.handleOpenDialog(t('membercard_list_delete'), t('membercard_list_do_you_want_to_delete_this_card_from_list'))}
@@ -230,64 +270,28 @@ class ListMemberCard extends React.Component {
                                 <TableCell scope="row" padding="default"  onClick={() => this.handleEditComponent(index)}>
                                     {item.name}
                                 </TableCell>
+                                <TableCell  scope="row" padding="default" style={{textAlign: 'center'}}> 
+                                    {/* <Icon classes={{root: classes.iconCopy}}>
+                                        file_copy
+                                    </Icon> */}
+                                    <IconButton> 
+                                        <CopyIcon/>
+                                    </IconButton>
+                                </TableCell> 
+                                <TableCell  scope="row" padding="default" style={{textAlign: 'center'}}> 
+                                    <IconButton onClick={() => this.handleOpenDialog(item._id)} > 
+                                        <DeleteIcon/>
+                                    </IconButton>
+                                </TableCell> 
                             </TableRow> ,
                             <TableRow key={index} className={classes.tableRowHeight}>
-                              <TableCell colSpan={6} padding={'none'} className = {classes.tableCellEdit}>
+                              <TableCell colSpan={4} padding={'none'} className = {classes.tableCellEdit}>
                                 <Collapse in={this.state.collapse[index]} unmountOnExit>
-                                    <Paper className={classes.paper}>
-                                        {/* <form className={classes.container} noValidate autoComplete="off">     */}
-                                            <Grid container spacing={24}>                   
-                                                <Grid item xs={12} sm={6} style={{alignItems: 'flex-end',display: 'flex'}}>
-                                                    <TextField
-                                                        label="Subject Code"
-                                                        name="code"
-                                                        margin="dense"
-                                                        // required
-                                                        value={!!this.state.data.code?this.state.data.code:item.code}
-                                                        onChange={this.handleChange}
-                                                        className={classes.textField}  
-                                                        InputLabelProps={{
-                                                            shrink: true,
-                                                            classes: {
-                                                            root: classes.inputType
-                                                            }
-                                                        }}
-                                                    />
-                                                </Grid>     
-                                                <Grid item xs={12} sm={6}>
-                                                    <TextField 
-                                                        label="Subject Name"
-                                                        name="name"
-                                                        margin="dense"
-                                                        // required
-                                                        value={!!this.state.data.name? this.state.data.name:item.name}
-                                                        onChange={this.handleChange}
-                                                        className={classes.textField}
-                                                        InputProps={{
-                                                            shrink: true,
-                                                            classes: { 
-                                                                inputType: classes.inputType
-                                                            },
-                                                        }}
-                                                        // InputLabelProps={{
-                                                        //     className:classes.label
-                                                        // }}
-                                                    />
-                                                </Grid>
-                                            </Grid>   
-                                            <Grid container justify='flex-end' className={classes.marginTop}>
-                                                <Button 
-                                                    variant="contained" 
-                                                    color="primary"
-                                                    onClick={() => this.handleSubmitEdit(item._id)} 
-                                                    // onClick={() => console.log('ADD')} 
-                                                    className={classes.button}
-                                                >
-                                                    Update
-                                                </Button>
-                                            </Grid>
-                                        {/* </form>*/}
-                                    </Paper>
+                                    <FormEdit
+                                        subject={item}
+                                        getList={this.getList}
+                                        handleEditComponent={this.handleEditComponent}
+                                    />
                                 </Collapse>
                               </TableCell>
                             </TableRow>

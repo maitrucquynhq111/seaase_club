@@ -13,6 +13,8 @@ import { tableHeadStyles } from './styles';
 const rows = [
     { id: 'name', numeric: false, disablePadding: false, label: 'Code' },
     { id: 'description', numeric: false, disablePadding: false, label: 'Name' },
+    { id: 'file', numeric: false, disablePadding: false, label: '' },
+    { id: 'delete', numeric: false, disablePadding: false, label: '' },
   ];
 
 class ListMemberCardHead extends React.Component {
