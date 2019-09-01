@@ -21,11 +21,12 @@ exports.create = function (req, res) {
 }
 
 exports.getList = function (req, res) {
-    let { search, limit, skip, id } = req.query;
+    let { search, limit, skip } = req.query;
     search = search || '';
     limit = parseInt(limit) || 10;
     skip = parseInt(skip) || 0;
     console.log(search);
+    console.log(limit, skip);
     
     let query = {
         $or: [
@@ -34,11 +35,9 @@ exports.getList = function (req, res) {
             // { email: new RegExp(search, 'i') },
         ]
     }
-    // if(id) query = Object.assign(query, { newsId: id })
+
     Subjects.find(query).countDocuments().then((sum) => {
-        Subjects.find(query).sort({ createdAt: -1 })
-        // .skip(skip).limit(limit)
-        .then(function (list) {
+        Subjects.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).then(function (list) {
             res.json({ success: true, data: { sum: sum, list: list, count: list.length }, err: null, message: null })
         }).catch((err) => {
             res.json({ success: false, data: null, err: err, message: err.message })

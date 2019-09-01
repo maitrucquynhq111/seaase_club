@@ -39,7 +39,7 @@ exports.create = function (req, res) {
 }
 
 exports.getList = function (req, res) {
-    let { search, limit, skip, id } = req.query;
+    let { search, limit, skip } = req.query;
     search = search || '';
     limit = parseInt(limit) || 10;
     skip = parseInt(skip) || 0;
@@ -47,11 +47,9 @@ exports.getList = function (req, res) {
     let query = {
         $or: [
             { name: new RegExp(search, 'i') },
-            { phone: new RegExp(search, 'i') },
-            { email: new RegExp(search, 'i') },
+            { code: new RegExp(search, 'i') },
         ]
     }
-    if(id) query = Object.assign(query, { newsId: id })
     Users.find(query).countDocuments().then((sum) => {
         Users.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).then(function (list) {
             res.json({ success: true, data: { sum: sum, list: list, count: list.length }, err: null, message: null })

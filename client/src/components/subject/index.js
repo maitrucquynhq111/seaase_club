@@ -25,19 +25,19 @@ class Subject extends React.Component {
   }
 
   componentWillMount(){
-      axios({
-          method: 'get',
-          url: DOMAIN + '/api/subjects/list',
-      })
-      .then(result => {
-        if(result.status == 200){
-            this.setState({
-                  listSubject: result.data.data.list,
-                  total: result.data.data.sum,
-              })
-        }
-      })
-      .catch(err => console.log(err))
+    //   axios({
+    //       method: 'get',
+    //       url: DOMAIN + '/api/subjects/list',
+    //   })
+    //   .then(result => {
+    //     if(result.status == 200){
+    //         this.setState({
+    //               listSubject: result.data.data.list,
+    //               total: result.data.data.sum,
+    //           })
+    //     }
+    //   })
+    //   .catch(err => console.log(err))
   }
   addNew() {
       this.setState({ isAdd: !this.state.isAdd})
@@ -95,13 +95,13 @@ class Subject extends React.Component {
                         Add New Subject
                     </Typography>}
                 <div className={classes.frameTitle}>
-                    {!this.state.isAddMemberCard &&
+                    {!this.state.isAdd &&
                         <div className={classes.search}>
                             <div className={classes.searchIcon}>
                                 <SearchIcon />
                             </div>
                             <InputBase
-                                placeholder="Search By Name"
+                                placeholder="Search By Name Or Code"
                                 classes={{
                                     root: classes.inputRoot,
                                     input: classes.inputInput,

@@ -13,10 +13,11 @@ import { tableHeadStyles } from './styles';
 const rows = [
     { id: 'code', numeric: false, disablePadding: false, label: 'Student Code' },
     { id: 'name', numeric: false, disablePadding: false, label: 'Name' },
-    { id: 'class', numeric: false, disablePadding: false, label: 'Class' },
+    { id: 'class', numeric: false, disablePadding: false, label: 'Major' },
     { id: 'email', numeric: false, disablePadding: false, label: 'Email̉' },
     { id: 'birthday', numeric: false, disablePadding: false, label: 'Birthday' },
     { id: 'fbLink', numeric: false, disablePadding: false, label: 'Facebook' },
+    { id: 'file', numeric: false, disablePadding: false, label: '' },
     { id: 'delete', numeric: false, disablePadding: false, label: '' },
   ];
 

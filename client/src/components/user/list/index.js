@@ -24,12 +24,16 @@ import { withStyles } from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import React from 'react';
+import {stringify} from 'query-string';
+
+// Component
 import { styles } from './styles';
 import ListMemberCardHead from './tableHead';
 import ListMemberCardToolbar from './tableToolbar';
 import FormEdit from './formEdit';
 import DialogForm from '../../dialog';
-import { DOMAIN } from '../../../utils/setting'
+import { DOMAIN, _pick } from '../../../utils/setting'
+import Loading from '../../loading'
 
  
 function desc(a, b, orderBy) {
@@ -67,32 +71,31 @@ class ListUsers extends React.Component {
             listSubject: [],
             listUserSubject: [],
             collapse: [],
+            limit: 5,
             total: 0,
             page: 0,
-            rowsPerPage: 5,
             openDialog: false
         };
         this.handleSubmitEdit = this.handleSubmitEdit.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
-        this.getList = this.getList.bind(this)
+        this.getList = this.getList.bind(this);
     }
 
     componentWillMount(){
-        axios({
-            method: 'get',
-            url: DOMAIN + '/api/users/list',
-        })
-        .then(result => {
-          if(result.status == 200){
-              this.setState({
-                    listUser: result.data.data.list,
-                    total: result.data.data.sum,
-                })
-          }
-        })
-        .catch(err => console.log(err))
+        this.props.onRef(null)
+    }
 
-        axios({
+    componentWillReceiveProps(nextProps){
+        if(this.props.listUser != nextProps.listUser){
+            this.setState({listUser: nextProps.listUser, total: nextProps.total})
+        }
+    }
+
+    async componentDidMount() {
+        this.props.onRef(this)
+        this.loading.startLoading()
+        await this.getList()
+        await axios({
             method: 'get',
             url: DOMAIN + '/api/subjects/list',
         })
@@ -104,8 +107,7 @@ class ListUsers extends React.Component {
           }
         })
         .catch(err => console.log(err))
-    }
-    componentDidMount() {
+        this.loading.stopLoading()
     }
 
     handleClickOpen = () => {
@@ -114,14 +116,6 @@ class ListUsers extends React.Component {
 
     handleClose = () => {
         this.setState({openDialog:false})
-    }
-
-    handleChange = (e) => {
-        let value = e.target.value
-        let name = e.target.name;
-        let data = this.state.data; 
-        data[name] = value; 
-        this.setState({data})
     }
 
     handleClick = (event, id) => {
@@ -164,11 +158,21 @@ class ListUsers extends React.Component {
     };
 
     handleChangePage = async (event, page) => {
-        this.setState({ page, selected: []  });
+        const _this = this;
+        this.setState({ page: page, selected: []  },async function() {
+            _this.loading.startLoading()
+            await _this.getList()
+            _this.loading.stopLoading()
+        });
     };
 
     handleChangeRowsPerPage = async event => {
-        this.setState({ rowsPerPage: event.target.value , selected: [] });
+        const _this = this;
+        this.setState({ limit: event.target.value, page: 0 , selected: [] },async function() {
+            _this.loading.startLoading()
+            await _this.getList()
+            _this.loading.stopLoading()
+        });
     };
     
     handleOpenDialog = (id) => {      
@@ -177,16 +181,14 @@ class ListUsers extends React.Component {
       })
     }
 
-    handleOpenListStudent = (id) => {
+    handleOpenListSubject = (id) => {
         const _this = this;        
         axios({
             method: 'get',
             url: `${DOMAIN}/api/userSubjects/getByUser/${id}`,
         })
         .then(result => {
-          if(result.status == 200){
-              console.log(result);
-              
+          if(result.status == 200){              
               _this.setState({
                     listUserSubject: result.data.data,
                     openDialog: true
@@ -216,13 +218,24 @@ class ListUsers extends React.Component {
     };
 
     getList(){
-        const _this = this;        
+        const _this = this;
+        const { limit, page } = this.state
+        let data = {
+            skip: page*limit,
+            limit: limit,
+        }
+        let url = `${DOMAIN}/api/users/list?${stringify(_pick(data, ['limit', 'skip', 'search']))}`
+        console.log(url);
+        
         axios({
             method: 'get',
-            url: DOMAIN + '/api/users/list',
+            // url: DOMAIN + '/api/users/list',
+            url: url,
         })
         .then(result => {
           if(result.status == 200){
+            //   console.log(result.data.data);
+              
               _this.setState({
                     listUser: result.data.data.list,
                     total: result.data.data.sum,
@@ -276,11 +289,12 @@ class ListUsers extends React.Component {
     }
     render() { 
         const { classes } = this.props;   
-        const { order, orderBy, selected, rowsPerPage, page, listUser, listSubject, listUserSubject, total, openDialog } = this.state;
-        const emptyRows = rowsPerPage - listUser.length;
+        const { order, orderBy, selected, page, listUser, listSubject, listUserSubject, total, openDialog, limit } = this.state;
+        const emptyRows = limit - listUser.length;
         
         return (
         <Paper className={classes.root}>
+            <Loading onRef={id => (this.loading = id)}/> 
             <DialogForm
                 onRef={dialog => (this.mDialog = dialog)} 
                 disagree="Cancel"
@@ -310,6 +324,9 @@ class ListUsers extends React.Component {
                                         secondary={[
                                             <React.Fragment>
                                                 <p><b>Subject Code: </b>{subject.code}</p>
+                                                {/* <IconButton onClick={() => this.handleDeleteUserSubject(item._id)} > 
+                                                    <DeleteIcon/>
+                                                </IconButton> */}
                                             </React.Fragment>
                                         ]}
                                         />
@@ -344,9 +361,8 @@ class ListUsers extends React.Component {
                     <TableBody>
                     {listUser
                         .sort(getSorting(order, orderBy))
-                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((item, index) => {
-                        const isSelected = this.isSelected(item._id);
+                        const isSelected = this.isSelected(item._id);                        
                         return (
                            [  
                             <TableRow 
@@ -379,7 +395,7 @@ class ListUsers extends React.Component {
                                     {item.fbLink}
                                 </TableCell>
                                 <TableCell  scope="row" padding="default" style={{textAlign: 'center'}}> 
-                                    <IconButton onClick={() => this.handleOpenListStudent(item._id)} > 
+                                    <IconButton onClick={() => this.handleOpenListSubject(item._id)} > 
                                         <CopyIcon/>
                                     </IconButton>
                                 </TableCell> 
@@ -414,8 +430,8 @@ class ListUsers extends React.Component {
             <TablePagination
                 component="div"
                 count={total}
-                labelRowsPerPage="SỐ hàng"
-                rowsPerPage={rowsPerPage}
+                labelRowsPerPage="Rows per page"
+                rowsPerPage={limit}
                 page={page}
                 backIconButtonProps={{
                     'aria-label': 'Previous Page',

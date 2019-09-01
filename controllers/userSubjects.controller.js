@@ -48,7 +48,6 @@ exports.findBySubjectId = function (req, res) {
 }
 exports.findByUserId = function (req, res) {
     let { id } = req.params;
-    let entity = req.body;
     UserSubjects.find({
         userId: id
     })
@@ -77,6 +76,31 @@ exports.findByUserId = function (req, res) {
         // }
     })
     .catch(err => {
+        res.json({ success: false, data: null, err: err, message: err.message })
+    })
+}
+exports.delete = function (req, res) {
+    let { id } = req.params;
+    UserSubjects.findOne({
+        _id: id
+    })
+    .then(result => {
+        if (result) {
+            UserSubjects.remove({
+                _id: id,
+            })
+            .then(result_delete => {
+                res.json({ success: true, data: result_delete, err: null, message: null })
+            })
+            .catch(err => {
+                res.json({ success: false, data: null, err: err, message: err.message })
+            })
+        }
+        else {
+            res.json({ success: false, data: null, err: language('vi').userNotFound, message: language('en').userNotFound })
+        }
+    })
+    .catch(err => {        
         res.json({ success: false, data: null, err: err, message: err.message })
     })
 }

@@ -10,4 +10,8 @@ router.route('/getByUser/:id')
 .get(
     UserSubjectsController.findByUserId
 )
+router.route('/:id')
+.delete(
+    UserSubjectsController.delete
+)
 module.exports = router

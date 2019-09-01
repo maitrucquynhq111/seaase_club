@@ -210,7 +210,7 @@ class AddSubject extends React.Component {
                         </Grid>
                         <Grid item xs={12} sm={4} style={{alignItems: 'flex-end',display: 'flex'}}>
                             <TextField 
-                                label="Class"
+                                label="Major"
                                 name="class"
                                 margin="dense"
                                 required

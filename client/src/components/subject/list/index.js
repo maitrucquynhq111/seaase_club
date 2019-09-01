@@ -22,12 +22,16 @@ import CopyIcon from '@material-ui/icons/FileCopy';
 import { withStyles } from '@material-ui/core/styles';
 import React from 'react';
 import axios from 'axios'
+import {stringify} from 'query-string';
+
+// Component
 import { styles } from './styles';
 import ListMemberCardHead from './tableHead';
 import ListMemberCardToolbar from './tableToolbar';
 import FormEdit from './formEdit';
 import DialogForm from '../../dialog';
-import { DOMAIN } from '../../../utils/setting'
+import { DOMAIN, _pick } from '../../../utils/setting'
+import Loading from '../../loading'
 
  
 function desc(a, b, orderBy) {
@@ -65,9 +69,12 @@ class ListMemberCard extends React.Component {
             listUserSubject: [],
             listUser: [],
             collapse: [],
+            limit: 5,
             total: 0,
             page: 0,
-            rowsPerPage: 5,
+            // total: 0,
+            // page: 0,
+            // rowsPerPage: 5,
             openDialog: false
         };
         this.handleSubmitEdit = this.handleSubmitEdit.bind(this);
@@ -76,7 +83,12 @@ class ListMemberCard extends React.Component {
     }
 
     componentWillMount(){
-        axios({
+    }
+
+    async componentDidMount() {
+        this.loading.startLoading()
+        await this.getList()
+        await axios({
             method: 'get',
             url: DOMAIN + '/api/users/list',
         })
@@ -88,9 +100,7 @@ class ListMemberCard extends React.Component {
           }
         })
         .catch(err => console.log(err))
-    }
-
-    componentDidMount() {
+        this.loading.stopLoading()
     }
 
     componentWillReceiveProps(nextProps){
@@ -154,11 +164,21 @@ class ListMemberCard extends React.Component {
     };
 
     handleChangePage = async (event, page) => {
-        this.setState({ page, selected: []  });
+        const _this = this;
+        this.setState({ page: page, selected: []  },async function() {
+            _this.loading.startLoading()
+            await _this.getList()
+            _this.loading.stopLoading()
+        });
     };
 
     handleChangeRowsPerPage = async event => {
-        this.setState({ rowsPerPage: event.target.value , selected: [] });
+        const _this = this;
+        this.setState({ limit: event.target.value, page: 0 , selected: [] },async function() {
+            _this.loading.startLoading()
+            await _this.getList()
+            _this.loading.stopLoading()
+        });
     };
     
     handleOpenDialog = (id) => {      
@@ -203,11 +223,18 @@ class ListMemberCard extends React.Component {
         return this.state.selected.indexOf(id) !== -1
     }
     
-    getList(){
-        const _this = this;        
-        axios({
+    async getList(){
+        const _this = this;
+        const { limit, page } = this.state
+        let data = {
+            skip: page*limit,
+            limit: limit,
+        }
+        let url = `${DOMAIN}/api/subjects/list?${stringify(_pick(data, ['limit', 'skip', 'search']))}`
+        
+        await axios({
             method: 'get',
-            url: DOMAIN + '/api/subjects/list',
+            url: url,
         })
         .then(result => {
           if(result.status == 200){
@@ -264,11 +291,13 @@ class ListMemberCard extends React.Component {
     }
     render() { 
         const { classes } = this.props;   
-        const { order, orderBy, selected, rowsPerPage, page, listSubject, listUserSubject, listUser, total, openDialog } = this.state;
-        const emptyRows = rowsPerPage - listSubject.length;
+        const { order, orderBy, selected, rowsPerPage, page, listSubject, listUserSubject, listUser, total, openDialog, limit } = this.state;
+        // const emptyRows = rowsPerPage - listSubject.length;
+        const emptyRows = limit - listSubject.length;
         
         return (
         <Paper className={classes.root}>
+            <Loading onRef={id => (this.loading = id)}/> 
             <DialogForm
                 onRef={dialog => (this.mDialog = dialog)} 
                 disagree="Cancel"
@@ -289,7 +318,6 @@ class ListMemberCard extends React.Component {
                 <DialogContent>
                     <List className={classes.rootList}>
                         {listUserSubject.map((item, index) => {
-                            console.log(item);
                             let user = listUser.find(element => element._id == item.userId)
                             return(
                                 <React.Fragment key={index}>
@@ -301,7 +329,7 @@ class ListMemberCard extends React.Component {
                                         primary={user.name}
                                         secondary={[
                                             <React.Fragment>
-                                                <p><b>Class: </b>{user.class}</p>
+                                                <p><b>Major: </b>{user.class}</p>
                                                 <p><b>Email: </b>{user.email}</p>
                                                 <p><b>Semester: </b>{item.semester}</p>
                                             </React.Fragment>
@@ -334,7 +362,7 @@ class ListMemberCard extends React.Component {
                     <TableBody>
                     {listSubject
                         .sort(getSorting(order, orderBy))
-                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((item, index) => {
                         const isSelected = this.isSelected(item._id);
                         return (
@@ -393,8 +421,8 @@ class ListMemberCard extends React.Component {
             <TablePagination
                 component="div"
                 count={total}
-                labelRowsPerPage="SỐ hàng"
-                rowsPerPage={rowsPerPage}
+                labelRowsPerPage="Rows per page"
+                rowsPerPage={limit}
                 page={page}
                 backIconButtonProps={{
                     'aria-label': 'Previous Page',
