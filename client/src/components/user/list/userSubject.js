@@ -10,6 +10,7 @@ import {
     Divider,
     ListItemText,
     Grid,
+    ListItemAvatar,
 } from '@material-ui/core';
 import axios from 'axios';
 import { withStyles } from '@material-ui/core/styles';
@@ -116,9 +117,38 @@ class UserSubject extends React.Component {
         .catch(err => console.log(err))
     }
 
+    groupBySemester = (semester) => {
+        const { listUserSubject } = this.state;        
+        return listUserSubject.filter(item => item.semester == semester)
+    }
+
+    renderUserSubject = (list) => {
+        const { listSubject} = this.props;
+        return list.map((item, index) => {
+            let subject = listSubject.find(subject => subject._id = item.subjectId)
+            return(
+                <Grid item xs={12} sm={4} style={{alignItems: 'flex-end',display: 'flex'}}>
+                    <ListItem alignItems="flex-start">
+                        <ListItemText
+                            // primary={subject.name}
+                            secondary={[
+                                <React.Fragment>
+                                    <p><b>{subject.name} </b> - {subject.code}</p>
+                                    <IconButton onClick={() => this.handleOpenDialog(item._id)} > 
+                                        <DeleteIcon/>
+                                    </IconButton>
+                                </React.Fragment>
+                        ]}
+                        />
+                    </ListItem>
+                </Grid>
+            )
+        })
+    }
+
     render() { 
         const { classes, listSubject, listSemester, idUser } = this.props;   
-        const { listUserSubject, listNewSubject, openDialog } = this.state;
+        const { listNewSubject, openDialog } = this.state;
         
         return (
             <Dialog 
@@ -147,24 +177,19 @@ class UserSubject extends React.Component {
                 <DialogTitle id="form-dialog-title">List Subject</DialogTitle>
                 <DialogContent>
                     <List className={classes.rootList}>
-                        {listUserSubject.map((item, index) => {
-                            let subject = listSubject.find(element => element._id == item.subjectId)
-                            if(subject){
+                        {listSemester.map((item, index) => {
+                            let listSubject = this.groupBySemester(item.name)
+                            if(listSubject.length > 0){
                                 return(
                                     <React.Fragment key={index}>
                                         <ListItem alignItems="flex-start">
                                             <ListItemText
-                                                primary={subject.name}
-                                                secondary={[
-                                                    <React.Fragment>
-                                                        <p><b>Subject Code: </b>{subject.code}</p>
-                                                        <IconButton onClick={() => this.handleOpenDialog(item._id)} > 
-                                                            <DeleteIcon/>
-                                                        </IconButton>
-                                                    </React.Fragment>
-                                            ]}
+                                                primary={item.isCurrent?<b>{item.name} - <span className={classes.textCurrentSemester}>Current Semester</span></b>:<b>{item.name}</b>}
                                             />
                                         </ListItem>
+                                        <Grid container spacing={24}>
+                                            {this.renderUserSubject(listSubject)}
+                                        </Grid>
                                         <Divider component="li" />
                                     </React.Fragment>
                                 )

@@ -31,6 +31,7 @@ import ListHead from './tableHead';
 import ListToolbar from './tableToolbar';
 import FormEdit from './formEdit';
 import DialogForm from '../../dialog';
+import UserSubject from './userSubject'
 import { DOMAIN, _pick } from '../../../utils/setting'
 import Loading from '../../loading'
 
@@ -68,6 +69,7 @@ class ListMemberCard extends React.Component {
             index: 0,
             listSubject: [],
             listUserSubject: [],
+            listSemester: [],
             listUser: [],
             collapse: [],
             limit: 5,
@@ -97,6 +99,18 @@ class ListMemberCard extends React.Component {
           if(result.status == 200){
               this.setState({
                     listUser: result.data.data.list,
+                })
+          }
+        })
+        .catch(err => console.log(err))
+        await axios({
+            method: 'get',
+            url: DOMAIN + '/api/semesters/list/all',
+        })
+        .then(result => {
+          if(result.status == 200){
+              this.setState({
+                    listSemester: result.data.data.list,
                 })
           }
         })
@@ -200,10 +214,9 @@ class ListMemberCard extends React.Component {
         })
         .then(result => {
           if(result.status == 200){
-              _this.setState({
-                    listUserSubject: result.data.data,
-                    openDialog: true
-                })
+                _this.setState({ listUserSubject: result.data.data, idUser: id }, function(){
+                      _this.mUserSubject.handleOpen()
+                  })
           }
         })
         .catch(err => console.log(err))
@@ -299,7 +312,7 @@ class ListMemberCard extends React.Component {
 
     render() { 
         const { classes } = this.props;   
-        const { order, orderBy, selected, rowsPerPage, page, listSubject, listUserSubject, listUser, total, openDialog, limit } = this.state;
+        const { order, orderBy, selected, page, listSubject, listUserSubject, listUser, listSemester, total, limit } = this.state;
         const emptyRows = limit - listSubject.length;
         
         return (
@@ -322,7 +335,13 @@ class ListMemberCard extends React.Component {
                 content="Do you want to delete subjects from list?"
                 action={this.handleDeleteMany} 
             />
-            <Dialog 
+            <UserSubject
+                onRef={dialog => (this.mUserSubject = dialog)}
+                listUser={listUser}
+                listSemester={listSemester}
+                listUserSubject={listUserSubject}
+            />
+            {/* <Dialog 
                 open={openDialog} 
                 onClose={this.handleClose} 
                 aria-labelledby="form-dialog-title"
@@ -338,9 +357,6 @@ class ListMemberCard extends React.Component {
                             return(
                                 <React.Fragment key={index}>
                                     <ListItem alignItems="flex-start">
-                                        {/* <ListItemAvatar>
-                                        <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-                                        </ListItemAvatar> */}
                                         <ListItemText
                                         primary={user.name}
                                         secondary={[
@@ -364,7 +380,7 @@ class ListMemberCard extends React.Component {
                         Close
                     </Button>
                 </DialogActions>
-            </Dialog>
+            </Dialog> */}
             <ListToolbar 
                 numSelected={selected.length} 
                 handleDelete={() => this.handleOpenDialogMany()}

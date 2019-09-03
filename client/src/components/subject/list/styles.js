@@ -85,7 +85,13 @@ export const styles = theme => ({
   // new modify
   tableRowHeight:{
     height:0
-  }
+  },
+  textCurrentSemester: {
+    fontSize: '1rem',
+    color: '#FF0000',
+    // marginTop: '16px',
+    // marginBottom: '16px',
+  },
 });
 
 export const tableHeadStyles = theme => ({

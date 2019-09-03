@@ -90,6 +90,12 @@ export const styles = theme => ({
     marginBottom: '16px',
     cursor: 'pointer',
   },
+  textCurrentSemester: {
+    fontSize: '1rem',
+    color: '#FF0000',
+    // marginTop: '16px',
+    // marginBottom: '16px',
+  },
 });
 
 export const tableHeadStyles = theme => ({
