@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function UserSubject(props) {
+export default function ListNewSubject(props) {
   const classes = useStyles();
 
   return (

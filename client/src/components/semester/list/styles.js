@@ -27,6 +27,19 @@ export const styles = theme => ({
     flexWrap: 'wrap',
     marginBottom : '8px',
   },
+  textField: {
+    marginRight: theme.spacing.unit,
+    width: '100%',
+  }, 
+  label : {
+    fontWeight :410
+  },
+  button: {
+    float: 'right',
+  },
+  inputType: {
+    height: 'unset'
+  },
   table: {
     minWidth: 1020,
   },
@@ -55,16 +68,6 @@ export const styles = theme => ({
     fontSize: '0.6125rem',
     color: '#3f51b5',
   },
-  textField: {
-    marginRight: theme.spacing.unit,
-    width: '100%',
-  }, 
-  inputType: {
-    height: 'unset'
-  },
-  label : {
-    fontWeight :410
-  },
   customRoot: {
     width: '100%',
   },
@@ -82,14 +85,7 @@ export const styles = theme => ({
   // new modify
   tableRowHeight:{
     height:0
-  },
-  textAddSubject: {
-    fontSize: '1rem',
-    color: '#1976d2',
-    marginTop: '16px',
-    marginBottom: '16px',
-    cursor: 'pointer',
-  },
+  }
 });
 
 export const tableHeadStyles = theme => ({
@@ -171,9 +167,5 @@ export const toolbarStyles = theme => ({
         width: 200,
       },
     },
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
   },
 });

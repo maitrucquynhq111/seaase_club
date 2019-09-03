@@ -1,5 +1,7 @@
 module.exports = {
   userNotFound: 'User not found',
+  semesterNotFound: 'Semester not found',
+  subjectNotFound: 'Subject not found',
   validator:{
     invalidParams:'Invalid params',
     passwordRequire:'Password is required',

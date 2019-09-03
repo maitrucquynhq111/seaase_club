@@ -1,10 +1,24 @@
 'user strict';
 const mongoose = require('mongoose');
 const moment = require('moment');
-const { Users, Subjects, UserSubjects } = require('../models');
+const { UserSubjects } = require('../models');
 const { language } = require("../language");
 const { _pick } = require('../utils/setting');
 const ObjectId = mongoose.Types.ObjectId;
+
+exports.create = function (req, res) {
+    let entity = req.body;
+    
+    entity.createdAt = new Date().getTime();
+    entity.updatedAt = entity.createdAt;
+    UserSubjects.create(_pick(entity, ['userId', 'subjectId', 'semester', 'scores', 'professor', 'createdAt', 'updatedAt']))
+    .then(result => {
+        res.json({ success: true, data: result, err: null, message: null})
+    })
+    .catch(err => {
+        res.json({ success: false, data: null, err: err, message: err.message })
+    })
+}
 
 exports.findBySubjectId = function (req, res) {
     let { id } = req.params;
@@ -14,33 +28,6 @@ exports.findBySubjectId = function (req, res) {
     })
     .then(result_find_subject => {
         res.json({ success: true, data: result_find_subject, err: null, message: null })  
-        // let promise = []
-        // if(result_find_subject.length > 0){
-        //     result_find_subject.forEach(element => {
-        //         promise.push(
-        //             Users.findOne({
-        //                 _id: element.userId
-        //             })
-        //         )
-        //     })
-        //     Promise.all(promise)
-        //     .then(result_find_user => {
-        //         let result = result_find_subject.map((item, index)=> {
-        //             item.userDetail = result_find_user[index]
-        //             console.log(result_find_user[index]);
-        //             console.log(item);
-        //             return item
-        //         })
-        //         // console.log(result);
-        //         res.json({ success: true, data: result, err: null, message: null })  
-        //     })
-        //     .catch(err => {
-        //         res.json({ success: false, data: null, err: err, message: err.message })
-        //     })
-        // }
-        // else{
-        //     res.json({ success: true, data: [], err: null, message: null })
-        // }
     })
     .catch(err => {
         res.json({ success: false, data: null, err: err, message: err.message })
@@ -53,27 +40,6 @@ exports.findByUserId = function (req, res) {
     })
     .then(result => {
         res.json({ success: true, data: result, err: null, message: null }) 
-        // let promise = []
-        // if(result.length > 0){
-        //     result.forEach(element => {
-        //         promise.push(
-        //             Subjects.findOne({
-        //                 _id: element.subjectId
-        //             })
-        //         )
-        //     })
-        //     Promise.all(promise)
-        //     .then(result_find_subject => {
-        //         console.log(result_find_user);
-        //         res.json({ success: true, data: result_find_subject, err: null, message: null })  
-        //     })
-        //     .catch(err => {
-        //         res.json({ success: false, data: null, err: err, message: err.message })
-        //     })
-        // }
-        // else{
-        //     res.json({ success: true, data: [], err: null, message: null })
-        // }
     })
     .catch(err => {
         res.json({ success: false, data: null, err: err, message: err.message })
@@ -86,7 +52,7 @@ exports.delete = function (req, res) {
     })
     .then(result => {
         if (result) {
-            UserSubjects.remove({
+            UserSubjects.deleteOne({
                 _id: id,
             })
             .then(result_delete => {

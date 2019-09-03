@@ -7,13 +7,18 @@ import {
     TablePagination,
     TableRow,
     IconButton,
+    Icon,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button,
     Checkbox
 } from '@material-ui/core';
-import axios from 'axios';
-import { withStyles } from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
-import CopyIcon from '@material-ui/icons/FileCopy';
+import { withStyles } from '@material-ui/core/styles';
 import React from 'react';
+import axios from 'axios'
 import {stringify} from 'query-string';
 
 // Component
@@ -21,7 +26,6 @@ import { styles } from './styles';
 import ListHead from './tableHead';
 import ListToolbar from './tableToolbar';
 import FormEdit from './formEdit';
-import UserSubject from './userSubject'
 import DialogForm from '../../dialog';
 import { DOMAIN, _pick } from '../../../utils/setting'
 import Loading from '../../loading'
@@ -50,25 +54,24 @@ const types = [
       label: 'Value',
     },
 ];
-class ListUsers extends React.Component {
+class ListMemberCard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             data: {},
-            idUser: '',
+            idSelect: '',
             selected: [],
             index: 0,
-            listUser: [],
-            listSubject: [],
-            listSemester: [],
-            listUserSubject: [],
+            listSemesters: [],
             collapse: [],
             limit: 5,
             total: 0,
             page: 0,
+            openDialog: false,
+            openDialogMany: false
         };
         this.handleDelete = this.handleDelete.bind(this);
-        this.handleDeleteMany = this.handleDeleteMany.bind(this)
+        this.handleDeleteMany = this.handleDeleteMany.bind(this);
         this.getList = this.getList.bind(this);
     }
 
@@ -76,53 +79,40 @@ class ListUsers extends React.Component {
         this.props.onRef(null)
     }
 
-    componentWillReceiveProps(nextProps){
-        if(this.props.listUser != nextProps.listUser){
-            this.setState({listUser: nextProps.listUser, total: nextProps.total})
-        }
-    }
-
     async componentDidMount() {
         this.props.onRef(this)
         this.loading.startLoading()
         await this.getList()
-        await axios({
-            method: 'get',
-            url: DOMAIN + '/api/subjects/list/all',
-        })
-        .then(result => {
-          if(result.status == 200){
-              this.setState({
-                    listSubject: result.data.data.list,
-                })
-          }
-        })
-        .catch(err => console.log(err))
-        await axios({
-            method: 'get',
-            url: DOMAIN + '/api/semesters/list/all',
-        })
-        .then(result => {
-          if(result.status == 200){
-              this.setState({
-                    listSemester: result.data.data.list,
-                })
-          }
-        })
-        .catch(err => console.log(err))
         this.loading.stopLoading()
+    }
+
+    componentWillReceiveProps(nextProps){
+        if(this.props.listSemesters != nextProps.listSemesters){
+            this.setState({listSemesters: nextProps.listSemesters, total: nextProps.total})
+        }
+    }
+
+    handleClose = () => {
+        this.setState({openDialog:false})
     }
     
     handleOpenDialog = (id) => {      
-        this.setState({idUser: id}, function(){
+        this.setState({idSelect: id}, function(){
         this.mDialog.handleDialogOpen()
       })
     }
-
+    
     handleOpenDialogMany = () => {
         this.mDialogMany.handleDialogOpen()
     }
 
+    handleChange = (e) => {
+        let value = e.target.value
+        let name = e.target.name;
+        let data = this.state.data; 
+        data[name] = value; 
+        this.setState({data})
+    }
     handleClick = (event, id) => {
         const { selected } = this.state;
         const selectedIndex = selected.indexOf(id);
@@ -156,7 +146,7 @@ class ListUsers extends React.Component {
 
     handleSelectAllClick = (event, checked) => {
         if (checked) {
-            this.setState(state => ({ selected: this.props.listMemberCard.map(n => n._id) }));
+            this.setState(state => ({ selected: state.listSemesters.map(n => n._id) }));
             return;
         }
         this.setState({ selected: [] });
@@ -180,26 +170,10 @@ class ListUsers extends React.Component {
         });
     };
 
-    handleOpenListSubject = (id) => {
-        const _this = this;
-        axios({
-            method: 'get',
-            url: `${DOMAIN}/api/userSubjects/getByUser/${id}`,
-        })
-        .then(result => {
-          if(result.status == 200){              
-              _this.setState({ listUserSubject: result.data.data, idUser: id }, function(){
-                    _this.mUserSubject.handleOpen()
-                })
-          }
-        })
-        .catch(err => console.log(err))
-    }
-
     handleEditComponent = (id) => {
-        const listUser = this.state.listUser;
+        const listSemesters = this.state.listSemesters;
         const collapse = this.state.collapse;
-        for(var i = 0;i <= listUser.length; i++)
+        for(var i = 0;i <= listSemesters.length; i++)
         {
             if(i === id) {
               collapse[i] = !collapse[i];
@@ -213,49 +187,27 @@ class ListUsers extends React.Component {
 
     isSelected = id => {
         return this.state.selected.indexOf(id) !== -1
-    };
-
-    getList(){
+    }
+    
+    async getList(){
         const _this = this;
         const { limit, page } = this.state
         let data = {
             skip: page*limit,
             limit: limit,
         }
-        let url = `${DOMAIN}/api/users/list?${stringify(_pick(data, ['limit', 'skip', 'search']))}`
+        let url = `${DOMAIN}/api/semesters/list?${stringify(_pick(data, ['limit', 'skip', 'search']))}`
         
-        axios({
+        await axios({
             method: 'get',
             url: url,
         })
         .then(result => {
           if(result.status == 200){
               _this.setState({
-                    listUser: result.data.data.list,
+                    listSemesters: result.data.data.list,
                     total: result.data.data.sum,
                 })
-          }
-        })
-        .catch(err => console.log(err))
-    }
-
-    handleDelete(){
-        const { data, idUser } = this.state;
-        const _this = this;
-             
-        axios({
-            method: 'delete',
-            url: `${DOMAIN}/api/users/${idUser}`,
-            data: data
-        })
-        .then(result => {
-          if(result.status == 200){
-              _this.getList()
-              _this.mDialog.handleDialogClose()
-            alert("Success")
-          }
-          else{
-              alert("Something went wrong")
           }
         })
         .catch(err => console.log(err))
@@ -267,7 +219,7 @@ class ListUsers extends React.Component {
              
         axios({
             method: 'delete',
-            url: `${DOMAIN}/api/users/deleteMany`,
+            url: `${DOMAIN}/api/semesters/deleteMany`,
             data: {data: selected}
         })
         .then(result => {
@@ -284,10 +236,32 @@ class ListUsers extends React.Component {
         .catch(err => console.log(err))
     }
 
+    handleDelete(){
+        const { data, idSelect } = this.state;
+        const _this = this;
+             
+        axios({
+            method: 'delete',
+            url: `${DOMAIN}/api/semesters/${JSON.stringify(idSelect)}`,
+            data: data
+        })
+        .then(result => {
+          if(result.status == 200){
+              _this.getList()
+              _this.mDialog.handleDialogClose()
+            alert("Success")
+          }
+          else{
+              alert("Something went wrong")
+          }
+        })
+        .catch(err => console.log(err))
+    }
+    
     render() { 
         const { classes } = this.props;   
-        const { order, orderBy, selected, page, listUser, listSubject, listSemester, listUserSubject, total, limit, idUser } = this.state;
-        const emptyRows = limit - listUser.length;
+        const { order, orderBy, selected, page, V, total, openDialog, openDialogMany, limit, listSemesters } = this.state;
+        const emptyRows = limit - listSemesters.length;
         
         return (
         <Paper className={classes.root}>
@@ -297,7 +271,7 @@ class ListUsers extends React.Component {
                 disagree="Cancel"
                 agree="Delete"
                 title ="Notice"
-                content="Do you want to delete this user from list?"
+                content="Do you want to delete this semester from list?"
                 action={this.handleDelete} 
             />
             {/* Delete many */}
@@ -306,16 +280,26 @@ class ListUsers extends React.Component {
                 disagree="Cancel"
                 agree="Delete"
                 title ="Notice"
-                content="Do you want to delete users from list?"
+                content="Do you want to delete semesters from list?"
                 action={this.handleDeleteMany} 
             />
-            <UserSubject
-                onRef={dialog => (this.mUserSubject = dialog)}
-                listSubject={listSubject}
-                listSemester={listSemester}
-                listUserSubject={listUserSubject}
-                idUser={idUser}
-            />
+            <Dialog 
+                open={openDialogMany} 
+                onClose={this.handleClose} 
+                aria-labelledby="form-dialog-title"
+                classes={{
+                    paperWidthSm: classes.paperWidthSm,
+                }}
+            >
+                <DialogTitle id="form-dialog-title">List Student</DialogTitle>
+                <DialogContent>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={this.handleClose} color="primary">
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
             <ListToolbar 
                 numSelected={selected.length} 
                 handleDelete={() => this.handleOpenDialogMany()}
@@ -328,13 +312,15 @@ class ListUsers extends React.Component {
                         orderBy={orderBy}
                         onSelectAllClick={this.handleSelectAllClick}
                         onRequestSort={this.handleRequestSort}
-                        rowCount={listUser.length}
+                        rowCount={listSemesters.length}
                     />
                     <TableBody>
-                    {listUser
+                    {listSemesters
                         .sort(getSorting(order, orderBy))
+                        // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((item, index) => {
-                        const isSelected = this.isSelected(item._id);                        
+                            
+                        const isSelected = this.isSelected(item._id);
                         return (
                            [  
                             <TableRow 
@@ -348,40 +334,24 @@ class ListUsers extends React.Component {
                                 <TableCell padding="checkbox">
                                     <Checkbox checked={isSelected} onClick={event => this.handleClick(event, item._id)}/>
                                 </TableCell>
-                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}} onClick={() => this.handleEditComponent(index)}>
-                                    {item.code}
-                                </TableCell>
-                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}} onClick={() => this.handleEditComponent(index)}>
-                                    {item.name}
-                                </TableCell>
-                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}} onClick={() => this.handleEditComponent(index)}>
-                                    {item.class}
-                                </TableCell>
-                                <TableCell scope="row" padding="default" onClick={() => this.handleEditComponent(index)}>
-                                    {item.email}
-                                </TableCell>
-                                <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}} onClick={() => this.handleEditComponent(index)}>
-                                    {item.birthday}
-                                </TableCell>
+                                {/* <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}}></TableCell> */}
                                 <TableCell scope="row" padding="default"  onClick={() => this.handleEditComponent(index)}>
-                                    {item.fbLink}
-                                </TableCell>
-                                <TableCell  scope="row" padding="default" style={{textAlign: 'center'}}> 
-                                    <IconButton onClick={() => this.handleOpenListSubject(item._id)} > 
-                                        <CopyIcon/>
-                                    </IconButton>
+                                    {item.name}
                                 </TableCell> 
                                 <TableCell  scope="row" padding="default" style={{textAlign: 'center'}}> 
                                     <IconButton onClick={() => this.handleOpenDialog(item._id)} > 
                                         <DeleteIcon/>
                                     </IconButton>
-                                </TableCell> 
-                            </TableRow>,
+                                </TableCell>
+                                <TableCell  scope="row" padding="default" style={{textAlign: 'center'}}> 
+                                    {item.isCurrent && <Icon color="secondary">grade</Icon>}
+                                </TableCell>
+                            </TableRow> ,
                             <TableRow key={index} className={classes.tableRowHeight}>
-                              <TableCell colSpan={7} padding={'none'} className = {classes.tableCellEdit}>
+                              <TableCell colSpan={4} padding={'none'} className = {classes.tableCellEdit}>
                                 <Collapse in={this.state.collapse[index]} unmountOnExit>
-                                    <FormEdit 
-                                        user={item}
+                                    <FormEdit
+                                        semester={item}
                                         getList={this.getList}
                                         handleEditComponent={this.handleEditComponent}
                                     />
@@ -419,4 +389,4 @@ class ListUsers extends React.Component {
         );
     }
 }
-export default (withStyles(styles, { withTheme: true })(ListUsers));
+export default (withStyles(styles, { withTheme: true })(ListMemberCard));

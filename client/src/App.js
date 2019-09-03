@@ -7,6 +7,7 @@ import './App.css';
 import { DOMAIN } from './utils/setting'
 //Components
 import Subject from './pages/subject'
+import Semester from './pages/semester'
 import User from './pages/user'
 console.log(DOMAIN);
 
@@ -32,6 +33,7 @@ class App extends Component{
     return (
       <div style={{height: '100%'}}>
       <Switch> 
+          <Route path='/semester' exact render={(props) => <Semester {...props}/>} />
           <Route path='/subject' exact render={(props) => <Subject {...props}/>} />
           <Route path='/' exact render={(props) => <User {...props}/>} />
       </Switch>

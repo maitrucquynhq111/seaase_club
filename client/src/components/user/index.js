@@ -41,8 +41,6 @@ class User extends React.Component {
             url: url,
         })
         .then(result => {
-            console.log(result);
-            
           if(result.status == 200){
             _this.setState({
                     listUser: result.data.data.list,
@@ -79,7 +77,6 @@ class User extends React.Component {
   render() { 
     const { classes, t } = this.props;
     const { listUser, total } = this.state;
-    console.log(this.listUser);
     
     return (
         <Fragment>
@@ -101,7 +98,7 @@ class User extends React.Component {
                                 <SearchIcon />
                             </div>
                             <InputBase
-                                placeholder="Search By Name Or Code"
+                                placeholder="Search By Name Or ID"
                                 classes={{
                                     root: classes.inputRoot,
                                     input: classes.inputInput,

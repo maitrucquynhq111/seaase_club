@@ -1,14 +1,10 @@
 import {
     Grid,
-    Collapse,
+    Checkbox,
     Button,
     Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TablePagination,
-    TableRow,
     TextField,
+    FormControlLabel
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import React from 'react';
@@ -21,7 +17,7 @@ class ListMemberCard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: this.props.subject,
+            data: this.props.semester,
         };
         this.handleSubmitEdit = this.handleSubmitEdit.bind(this)
     }
@@ -35,6 +31,10 @@ class ListMemberCard extends React.Component {
     handleChange = (e) => {
         let value = e.target.value
         let name = e.target.name;
+        if(e.target.type === 'checkbox'){
+            // value = (e.target.checked) ? 1:0;
+            value = e.target.checked;
+        }
         let data = this.state.data; 
         data[name] = value; 
         this.setState({data})
@@ -46,7 +46,7 @@ class ListMemberCard extends React.Component {
         const _this = this;        
         await axios({
             method: 'put',
-            url: `${DOMAIN}/api/subjects/${id}`,
+            url: `${DOMAIN}/api/semesters/${id}`,
             data: data
         })
         .then(result => {
@@ -63,33 +63,16 @@ class ListMemberCard extends React.Component {
         this.loading.stopLoading()
     }
     render() { 
-        const { classes } = this.props;
+        const { classes, subject } = this.props;
         const { data } = this.state
         
         return (
             <Paper className={classes.paper}>
                 <Loading onRef={id => (this.loading = id)}/> 
-                <Grid container spacing={24}>                   
-                    <Grid item xs={12} sm={6} style={{alignItems: 'flex-end',display: 'flex'}}>
-                        <TextField
-                            label="Subject Code"
-                            name="code"
-                            margin="dense"
-                            // required
-                            value={data.code}
-                            onChange={this.handleChange}
-                            className={classes.textField}  
-                            InputLabelProps={{
-                                shrink: true,
-                                classes: {
-                                root: classes.inputType
-                                }
-                            }}
-                        />
-                    </Grid>     
+                <Grid container spacing={24}>   
                     <Grid item xs={12} sm={6}>
                         <TextField 
-                            label="Subject Name"
+                            label="Name"
                             name="name"
                             margin="dense"
                             // required
@@ -102,6 +85,20 @@ class ListMemberCard extends React.Component {
                                     inputType: classes.inputType
                                 },
                             }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name = "isCurrent"
+                                    checked={data.isCurrent}
+                                    value={data.isCurrent}
+                                    onChange={this.handleChange}
+                                />
+                            }
+                            className={classes.label}
+                            label='Is Current Semester'
                         />
                     </Grid>
                 </Grid>   

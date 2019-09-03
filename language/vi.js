@@ -1,5 +1,7 @@
 module.exports = {
   userNotFound: 1001,
+  semesterNotFound: 1002,
+  subjectNotFound: 1003,
   validator:{
     invalidParams:2001,
     passwordRequire:2002,
