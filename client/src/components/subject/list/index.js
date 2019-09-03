@@ -15,7 +15,8 @@ import {
     List,
     ListItem,
     Divider,
-    ListItemText
+    ListItemText,
+    Checkbox,
 } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CopyIcon from '@material-ui/icons/FileCopy';
@@ -26,8 +27,8 @@ import {stringify} from 'query-string';
 
 // Component
 import { styles } from './styles';
-import ListMemberCardHead from './tableHead';
-import ListMemberCardToolbar from './tableToolbar';
+import ListHead from './tableHead';
+import ListToolbar from './tableToolbar';
 import FormEdit from './formEdit';
 import DialogForm from '../../dialog';
 import { DOMAIN, _pick } from '../../../utils/setting'
@@ -77,8 +78,8 @@ class ListMemberCard extends React.Component {
             // rowsPerPage: 5,
             openDialog: false
         };
-        this.handleSubmitEdit = this.handleSubmitEdit.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
+        this.handleDeleteMany = this.handleDeleteMany.bind(this);
         this.getList = this.getList.bind(this);
     }
 
@@ -115,6 +116,16 @@ class ListMemberCard extends React.Component {
 
     handleClose = () => {
         this.setState({openDialog:false})
+    }
+    
+    handleOpenDialog = (id) => {      
+        this.setState({idUser: id}, function(){
+        this.mDialog.handleDialogOpen()
+      })
+    }
+
+    handleOpenDialogMany = () => {
+        this.mDialogMany.handleDialogOpen()
     }
 
     handleChange = (e) => {
@@ -157,7 +168,7 @@ class ListMemberCard extends React.Component {
 
     handleSelectAllClick = (event, checked) => {
         if (checked) {
-            this.setState(state => ({ selected: this.props.listMemberCard.map(n => n._id) }));
+            this.setState(state => ({ selected: state.listSubject.map(n => n._id) }));
             return;
         }
         this.setState({ selected: [] });
@@ -180,12 +191,6 @@ class ListMemberCard extends React.Component {
             _this.loading.stopLoading()
         });
     };
-    
-    handleOpenDialog = (id) => {      
-        this.setState({idUser: id}, function(){
-        this.mDialog.handleDialogOpen()
-      })
-    }
 
     handleOpenListStudent = (id) => {
         const _this = this;        
@@ -247,6 +252,29 @@ class ListMemberCard extends React.Component {
         .catch(err => console.log(err))
     }
 
+    handleDeleteMany(){
+        const { data, selected } = this.state;
+        const _this = this;
+             
+        axios({
+            method: 'delete',
+            url: `${DOMAIN}/api/subjects/deleteMany`,
+            data: {data: selected}
+        })
+        .then(result => {
+          if(result.status == 200){
+              _this.getList()
+              _this.setState({selected: []})
+              _this.mDialogMany.handleDialogClose()
+            alert("Success")
+          }
+          else{
+              alert("Something went wrong")
+          }
+        })
+        .catch(err => console.log(err))
+    }
+
     handleDelete(){
         const { data, idUser } = this.state;
         const _this = this;
@@ -269,30 +297,9 @@ class ListMemberCard extends React.Component {
         .catch(err => console.log(err))
     }
 
-    handleSubmitEdit(id){
-        const { data } = this.state;
-        const _this = this;        
-        axios({
-            method: 'put',
-            url: `${DOMAIN}/api/subjects/${id}`,
-            data: data
-        })
-        .then(result => {
-          if(result.status == 200){
-              _this.getList()
-            alert("Success")
-            _this.handleEditComponent(-1)
-          }
-          else{
-              alert("Something went wrong")
-          }
-        })
-        .catch(err => console.log(err))
-    }
     render() { 
         const { classes } = this.props;   
         const { order, orderBy, selected, rowsPerPage, page, listSubject, listUserSubject, listUser, total, openDialog, limit } = this.state;
-        // const emptyRows = rowsPerPage - listSubject.length;
         const emptyRows = limit - listSubject.length;
         
         return (
@@ -305,6 +312,15 @@ class ListMemberCard extends React.Component {
                 title ="Notice"
                 content="Do you want to delete this subject from list?"
                 action={this.handleDelete} 
+            />
+            {/* Delete many */}
+            <DialogForm
+                onRef={dialog => (this.mDialogMany = dialog)} 
+                disagree="Cancel"
+                agree="Delete"
+                title ="Notice"
+                content="Do you want to delete subjects from list?"
+                action={this.handleDeleteMany} 
             />
             <Dialog 
                 open={openDialog} 
@@ -349,9 +365,13 @@ class ListMemberCard extends React.Component {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <ListToolbar 
+                numSelected={selected.length} 
+                handleDelete={() => this.handleOpenDialogMany()}
+            />
             <div className={classes.tableWrapper}>
                 <Table className={classes.table + ' table-card'} aria-labelledby="tableTitle">
-                    <ListMemberCardHead
+                    <ListHead
                         numSelected={selected.length}
                         order={order}
                         orderBy={orderBy}
@@ -375,9 +395,9 @@ class ListMemberCard extends React.Component {
                                 key={item.code+'row'}
                                 selected={isSelected}
                             >
-                                {/* <TableCell padding="checkbox">
+                                <TableCell padding="checkbox">
                                     <Checkbox checked={isSelected} onClick={event => this.handleClick(event, item._id)}/>
-                                </TableCell> */}
+                                </TableCell>
                                 {/* <TableCell scope="row" padding="default" style={{textTransform: 'capitalize'}}></TableCell> */}
                                 <TableCell scope="row" padding="default"  onClick={() => this.handleEditComponent(index)}>
                                     {item.code}

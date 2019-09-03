@@ -15,12 +15,13 @@ import React from 'react';
 import { styles } from './styles';
 import axios from 'axios';
 import { DOMAIN } from '../../../utils/setting'
+import Loading from '../../loading'
 
 class FormEdit extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: {},
+            data: this.props.user
         };
         this.handleSubmitEdit = this.handleSubmitEdit.bind(this);
     }
@@ -39,10 +40,11 @@ class FormEdit extends React.Component {
         this.setState({data})
     }
 
-    handleSubmitEdit(id){
+    async handleSubmitEdit(id){
+        this.loading.startLoading()
         const { data } = this.state;
         const _this = this;        
-        axios({
+        await axios({
             method: 'put',
             url: `${DOMAIN}/api/users/${id}`,
             data: data
@@ -58,12 +60,14 @@ class FormEdit extends React.Component {
           }
         })
         .catch(err => console.log(err))
+        this.loading.stopLoading()
     }
     render() { 
-        const { classes, user } = this.props;
-        
+        const { classes } = this.props;
+        const { data } = this.state
         return (
             <Paper className={classes.paper}>
+                <Loading onRef={id => (this.loading = id)}/> 
                 <form className={classes.container} noValidate autoComplete="off">    
                     <Grid container spacing={24}>
                         <Grid item xs={12} sm={4} style={{alignItems: 'flex-end',display: 'flex'}}>
@@ -72,7 +76,7 @@ class FormEdit extends React.Component {
                                 name="code"
                                 margin="dense"
                                 required
-                                value={!!this.state.data.code?this.state.data.code:user.code}
+                                value={data.code}
                                 onChange={this.handleChange}
                                 className={classes.textField}
                                 InputProps={{
@@ -92,7 +96,7 @@ class FormEdit extends React.Component {
                                 name="name"
                                 margin="dense"
                                 required
-                                value={!!this.state.data.name?this.state.data.name:user.name}
+                                value={data.name}
                                 onChange={this.handleChange}
                                 className={classes.textField}
                                 InputProps={{
@@ -112,7 +116,7 @@ class FormEdit extends React.Component {
                                 name="class"
                                 margin="dense"
                                 required
-                                value={!!this.state.data.class?this.state.data.class:user.class}
+                                value={data.class}
                                 onChange={this.handleChange}
                                 className={classes.textField}
                                 InputProps={{
@@ -134,7 +138,7 @@ class FormEdit extends React.Component {
                                 name="email"
                                 margin="dense"
                                 required
-                                value={!!this.state.data.email?this.state.data.email:user.email}
+                                value={data.email}
                                 onChange={this.handleChange}
                                 className={classes.textField}
                                 InputProps={{
@@ -154,7 +158,7 @@ class FormEdit extends React.Component {
                                 name="fbLink"
                                 margin="dense"
                                 required
-                                value={!!this.state.data.fbLink?this.state.data.fbLink:user.fbLink}
+                                value={data.fbLink}
                                 onChange={this.handleChange}
                                 className={classes.textField}  
                                 InputLabelProps={{
@@ -171,7 +175,7 @@ class FormEdit extends React.Component {
                                 name="birthday"
                                 margin="dense"
                                 required
-                                value={!!this.state.data.birthday?this.state.data.birthday:user.birthday}
+                                value={data.birthday}
                                 onChange={this.handleChange}
                                 className={classes.textField}
                                 InputProps={{
@@ -190,7 +194,7 @@ class FormEdit extends React.Component {
                         <Button 
                             variant="contained" 
                             color="primary"
-                            onClick={() => this.handleSubmitEdit(user._id)} 
+                            onClick={() => this.handleSubmitEdit(data._id)} 
                             className={classes.button}
                         >
                             Update

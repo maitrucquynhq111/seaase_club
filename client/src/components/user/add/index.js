@@ -17,10 +17,11 @@ import Typography from '@material-ui/core/Typography';
 import React, { Fragment } from 'react';
 import axios from 'axios';
 import UserSubject from './userSubject';
+import AddUserSubject from './addUserSubject'
 /*----styles----*/
 import { styles } from './styles';
 import { DOMAIN } from '../../../utils/setting'
-import { func } from 'prop-types';
+import Loading from '../../loading'
 class AddSubject extends React.Component {
     constructor(props) {
         super(props)
@@ -28,6 +29,7 @@ class AddSubject extends React.Component {
             data: {},
             listSubject: [],
             listUserSubject: [],
+            listSemester: [],
             openDialog: false,
             newSubject: {},
         }
@@ -36,10 +38,10 @@ class AddSubject extends React.Component {
     }
 
     componentWillMount(){
-        const _this = this;        
+        const _this = this;
         axios({
             method: 'get',
-            url: DOMAIN + '/api/subjects/list',
+            url: DOMAIN + '/api/subjects/list/all',
         })
         .then(result => {
           if(result.status == 200){
@@ -50,14 +52,24 @@ class AddSubject extends React.Component {
           }
         })
         .catch(err => console.log(err))
+        axios({
+            method: 'get',
+            url: DOMAIN + '/api/semesters/list/all',
+        })
+        .then(result => {
+          if(result.status == 200){
+              _this.setState({
+                    listSemester: result.data.data.list,
+                    total: result.data.data.sum,
+                })
+          }
+        })
+        .catch(err => console.log(err))
     } 
 
     handleClickOpen = () => {
-        this.setState({openDialog:true, newSubject: {}})
-    }
-
-    handleClose = () => {
-        this.setState({openDialog:false})
+        // this.setState({openDialog:true, newSubject: {}})
+        this.addSubject.handleClickOpen()
     }
 
     handleChange = (e) => {
@@ -66,36 +78,26 @@ class AddSubject extends React.Component {
         let data = this.state.data; 
         data[name] = value; 
         this.setState({data})
-    } 
-
-    handleChangeAddSubject = (e) => {
-        let value = e.target.value
-        let name = e.target.name;
-        let newSubject = this.state.newSubject; 
-        newSubject[name] = value; 
-        this.setState({newSubject})
     }
 
-    updateSubject(){
-        console.log(this.state.newSubject);
+    updateSubject(newSubject){
         let listUserSubject = this.state.listUserSubject;
-        const newSubject = this.state.newSubject
         listUserSubject.push(newSubject)
         this.setState({listUserSubject}, function(){
-            this.handleClose()
+            this.addSubject.handleClose()
         })
     }
-    handleSubmit(){
+    async handleSubmit(){
         let { data, listUserSubject } = this.state;
+        this.loading.startLoading()
         data.listUserSubject = listUserSubject;
         const _this = this;
-        axios({
+        await axios({
             method: 'post',
             url: DOMAIN + '/api/users/create',
             data: data
         })
         .then(result => {
-        //   console.log(result);
           if(result.status == 200){
             alert("Success")
             _this.props.addNew()
@@ -105,72 +107,26 @@ class AddSubject extends React.Component {
           }
         })
         .catch(err => console.log(err))
+        this.loading.stopLoading()
     }
     render() {
         const { classes } = this.props;
-        const { openDialog, listSubject, newSubject, listUserSubject } = this.state
-        console.log(listUserSubject);
+        const { listSubject, listUserSubject, listSemester } = this.state
         
         return (
             <Paper className={classes.root}>
-                <Dialog open={openDialog} onClose={this.handleClose} aria-labelledby="form-dialog-title">
-                    <DialogTitle id="form-dialog-title">Add New Subject</DialogTitle>
-                    <DialogContent>
-                        <Grid container spacing={24}>
-                            <Grid item xs={12} sm={6} style={{alignItems: 'flex-end',display: 'flex'}}>
-                                <FormControl className={classes.formControl}>
-                                    <InputLabel htmlFor="age-simple">Subject</InputLabel>
-                                    <Select
-                                        value={newSubject.subjectId}
-                                        onChange={this.handleChangeAddSubject}
-                                        inputProps={{
-                                            name: 'subjectId',
-                                            id: 'age-simple',
-                                        }}
-                                    >
-                                    {listSubject.map((item, index) =>
-                                        <MenuItem key={index} value={item._id}>{item.name}</MenuItem>
-                                    )}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={12} sm={6} style={{alignItems: 'flex-end',display: 'flex'}}>
-                                <TextField 
-                                    label="Semester"
-                                    name="semester"
-                                    margin="dense"
-                                    required
-                                    value={newSubject.semester}
-                                    ref={input=> this.textInput=input}
-                                    onChange={this.handleChangeAddSubject}
-                                    className={classes.textField}
-                                    InputProps={{
-                                        shrink: true,
-                                        classes: {
-                                            inputType: classes.inputType
-                                        },
-                                    }}
-                                    InputLabelProps={{
-                                        className:classes.label
-                                    }}
-                                />
-                            </Grid>
-                        </Grid>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={this.handleClose} color="primary">
-                            Cancel
-                        </Button>
-                        <Button onClick={this.updateSubject} color="primary">
-                            Add
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                <Loading onRef={id => (this.loading = id)}/> 
+                <AddUserSubject 
+                    onRef = {id => this.addSubject = id}
+                    updateSubject={this.updateSubject}
+                    listSubject={listSubject}
+                    listSemester={listSemester}
+                />
                 <form className={classes.container} noValidate autoComplete="off">    
                     <Grid container spacing={24}>
                         <Grid item xs={12} sm={4} style={{alignItems: 'flex-end',display: 'flex'}}>
                             <TextField 
-                                label="Student Code"
+                                label="Student ID"
                                 name="code"
                                 margin="dense"
                                 required
@@ -299,6 +255,7 @@ class AddSubject extends React.Component {
                             <UserSubject
                                 listUserSubject={listUserSubject}
                                 listSubject={listSubject}
+                                listSemester={listSemester}
                             />
                         </Grid>
                         <Grid item xs={12} sm={12} style={{alignItems: 'flex-end',display: 'flex'}}>

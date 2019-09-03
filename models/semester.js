@@ -4,15 +4,12 @@ const Schema = mongoose.Schema;
 // this will be our data base's data structure 
 const ModalSchema = new Schema(
 {
-    userId: {type: String, default: ''},
-    subjectId: {type: String, default: ''},
-    semester: {type: String, default: ''},
-    scores: {type: String, default: ''},
-    professor: {type: String, default: ''},
+    name: {type: String, default: ''},
+    isCurrent: {type: Boolean, default: false},
     createdAt: {type: Number, default: new Date().getTime()},
     updatedAt: {type: Number, default: new Date().getTime()},
 });
 // ModalSchema.index({title: 'text', slug: 'text', description: 'text'});
 
 // export the new Schema so we could modify it using Node.js
-module.exports = mongoose.model("userSubjects", ModalSchema);
+module.exports = mongoose.model("semesters", ModalSchema);

@@ -24,14 +24,14 @@ class ListMemberCardToolbar extends React.Component {
    >
      <div className={classes.title}>
          <Typography color="inherit" variant="subtitle1">
-           {numSelected} {t('membercard_list_tabletoolbar_selected')}
+           {numSelected} Selected
            </Typography>
      </div>
      <div className={classes.spacer}>
 
      </div>
      <div className={classes.actions}>
-         <Tooltip title={t("membercard_list_tabletoolbar_delete")}>
+         <Tooltip title="Semester delete">
            <IconButton aria-label="Delete">
              <DeleteIcon
                onClick={handleDelete}

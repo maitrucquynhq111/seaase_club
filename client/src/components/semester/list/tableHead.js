@@ -11,9 +11,8 @@ import { tableHeadStyles } from './styles';
 // Sortable Table UI-Material
 // Styles
 const rows = [
-    { id: 'code', numeric: false, disablePadding: false, label: 'Code' },
     { id: 'name', numeric: false, disablePadding: false, label: 'Name' },
-    { id: 'file', numeric: false, disablePadding: false, label: '' },
+    { id: 'note', numeric: false, disablePadding: false, label: '' },
     { id: 'delete', numeric: false, disablePadding: false, label: '' },
   ];
 

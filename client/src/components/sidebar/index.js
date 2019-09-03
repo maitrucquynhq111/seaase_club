@@ -67,6 +67,18 @@ class Sidebar extends React.Component {
                             </ListItemText>
                         </ListItem>
                     </Link>
+                    <Link to='/semester'>
+                        <ListItem button>
+                            <ListItemIcon className={classes.icon}>
+                                <DashboardIcon />
+                            </ListItemIcon>
+                            <ListItemText>
+                                <Typography variant="body1" className={classes.item}>
+                                    Semester
+                                </Typography>
+                            </ListItemText>
+                        </ListItem>
+                    </Link>
                 </List>
             </Drawer>
         );

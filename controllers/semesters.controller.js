@@ -1,7 +1,7 @@
 'user strict';
 const mongoose = require('mongoose');
 const moment = require('moment');
-const { Subjects } = require('../models');
+const { Semesters } = require('../models');
 const { language } = require("../language");
 const { _pick } = require('../utils/setting');
 const ObjectId = mongoose.Types.ObjectId;
@@ -11,7 +11,7 @@ exports.create = function (req, res) {
     
     entity.createdAt = new Date().getTime();
     entity.updatedAt = entity.createdAt;
-    Subjects.create(_pick(entity, ['name', 'code', 'createdAt', 'updatedAt']))
+    Semesters.create(_pick(entity, ['name', 'isCurrent', 'createdAt', 'updatedAt']))
     .then(result => {
         res.json({ success: true, data: result, err: null, message: null})
     })
@@ -29,13 +29,11 @@ exports.getList = function (req, res) {
     let query = {
         $or: [
             { name: new RegExp(search, 'i') },
-            // { phone: new RegExp(search, 'i') },
-            // { email: new RegExp(search, 'i') },
         ]
     }
 
-    Subjects.find(query).countDocuments().then((sum) => {
-        Subjects.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).then(function (list) {
+    Semesters.find(query).countDocuments().then((sum) => {
+        Semesters.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).then(function (list) {
             res.json({ success: true, data: { sum: sum, list: list, count: list.length }, err: null, message: null })
         }).catch((err) => {
             res.json({ success: false, data: null, err: err, message: err.message })
@@ -44,20 +42,17 @@ exports.getList = function (req, res) {
         res.json({ success: false, data: null, err: err, message: err.message })
     })
 }
-
 exports.getAll = function (req, res) {
     let { search, limit, skip } = req.query;
     
     // let query = {
     //     $or: [
     //         { name: new RegExp(search, 'i') },
-    //         // { phone: new RegExp(search, 'i') },
-    //         // { email: new RegExp(search, 'i') },
     //     ]
     // }
 
-    Subjects.find().countDocuments().then((sum) => {
-        Subjects.find().sort({ createdAt: -1 }).then(function (list) {
+    Semesters.find().countDocuments().then((sum) => {
+        Semesters.find().sort({ createdAt: -1 }).then(function (list) {
             res.json({ success: true, data: { sum: sum, list: list, count: list.length }, err: null, message: null })
         }).catch((err) => {
             res.json({ success: false, data: null, err: err, message: err.message })
@@ -70,25 +65,48 @@ exports.getAll = function (req, res) {
 exports.update = function (req, res) {
     let { id } = req.params;
     let entity = req.body;
-    Subjects.findOne({
+    Semesters.findOne({
         _id: id
     })
     .then(result => {
         if (result) {
-            Subjects.findOneAndUpdate({
-                _id: id,
-            }, {
-                $set: _pick(entity, ['name', 'code', 'updatedAt'])
-            })
-            .then(result_update => {
-                res.json({ success: true, data: result_update, err: null, message: null })
-            })
-            .catch(err => {
-                res.json({ success: false, data: null, err: err, message: err.message })
-            })
+            if(entity.isCurrent){ // update isCurrent=true => set tất cả isCurrent khác về false
+                Semesters.updateMany({},{
+                    $set: {isCurrent: false}
+                })
+                .then(update_many => {
+                    Semesters.findOneAndUpdate({
+                        _id: id,
+                    }, {
+                        $set: _pick(entity, ['name', 'isCurrent', 'updatedAt'])
+                    })
+                    .then(result_update => {
+                        res.json({ success: true, data: result_update, err: null, message: null })
+                    })
+                    .catch(err => {
+                        res.json({ success: false, data: null, err: err, message: err.message })
+                    })
+                })
+                .catch(err_update_many => {
+                    res.json({ success: false, data: null, err: err_update_many, message: err_update_many.message })
+                })
+            }
+            else{
+                Semesters.findOneAndUpdate({
+                    _id: id,
+                }, {
+                    $set: _pick(entity, ['name', 'isCurrent', 'updatedAt'])
+                })
+                .then(result_update => {
+                    res.json({ success: true, data: result_update, err: null, message: null })
+                })
+                .catch(err => {
+                    res.json({ success: false, data: null, err: err, message: err.message })
+                })
+            }
         }
         else {
-            res.json({ success: false, data: null, err: language('vi').subjectNotFound, message: language('en').subjectNotFound })
+            res.json({ success: false, data: null, err: language('vi').semesterNotFound, message: language('en').semesterNotFound })
         }
     })
     .catch(err => {        
@@ -99,31 +117,23 @@ exports.update = function (req, res) {
 exports.delete = function (req, res) {
     let { id } = req.params;
     let entity = req.body;
-    Subjects.findOne({
+    Semesters.findOne({
         _id: id
     })
     .then(result => {
         if (result) {
-            Subjects.deleteOne({
+            Semesters.deleteOne({
                 _id: id,
             })
             .then(result_delete => {
-                UserSubjects.deleteMany({
-                    subjectId: id
-                })
-                .then(res_delete => {
-                    res.json({ success: true, data: result_delete, err: null, message: null })
-                })
-                .catch(err => {
-                    res.json({ success: false, data: null, err: err, message: err.message })
-                })
+                res.json({ success: true, data: result_delete, err: null, message: null })
             })
             .catch(err => {
                 res.json({ success: false, data: null, err: err, message: err.message })
             })
         }
         else {
-            res.json({ success: false, data: null, err: language('vi').subjectNotFound, message: language('en').subjectNotFound })
+            res.json({ success: false, data: null, err: language('vi').semesterNotFound, message: language('en').semesterNotFound })
         }
     })
     .catch(err => {        
@@ -134,23 +144,13 @@ exports.delete = function (req, res) {
 exports.deleteMany = function (req, res) {
     let entity = req.body;
     
-    Subjects.deleteMany({
+    Semesters.deleteMany({
         _id:{
             $in: entity.data
         }
     })
     .then(result_delete => {
-        UserSubjects.deleteMany({
-            subjectId: {
-                $in: entity.data
-            }
-        })
-        .then(res_delete => {
-            res.json({ success: true, data: result_delete, err: null, message: null })
-        })
-        .catch(err => {
-            res.json({ success: false, data: null, err: err, message: err.message })
-        })
+        res.json({ success: true, data: result_delete, err: null, message: null })
     })
     .catch(err => {
         res.json({ success: false, data: null, err: err, message: err.message })

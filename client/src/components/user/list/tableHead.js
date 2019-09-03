@@ -11,7 +11,7 @@ import { tableHeadStyles } from './styles';
 // Sortable Table UI-Material
 // Styles
 const rows = [
-    { id: 'code', numeric: false, disablePadding: false, label: 'Student Code' },
+    { id: 'code', numeric: false, disablePadding: false, label: 'Student ID' },
     { id: 'name', numeric: false, disablePadding: false, label: 'Name' },
     { id: 'class', numeric: false, disablePadding: false, label: 'Major' },
     { id: 'email', numeric: false, disablePadding: false, label: 'Email̉' },
@@ -31,13 +31,13 @@ class ListMemberCardHead extends React.Component {
       return (
         <TableHead>
           <TableRow>
-            {/* <TableCell padding="checkbox">
+            <TableCell padding="checkbox">
               <Checkbox
                 indeterminate={numSelected > 0 && numSelected < rowCount}
                 checked={numSelected === rowCount}
                 onChange={onSelectAllClick}
               />
-            </TableCell> */}
+            </TableCell>
             {rows.map(row => {
               return (
                 <TableCell

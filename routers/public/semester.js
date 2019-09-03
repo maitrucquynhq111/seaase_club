@@ -1,31 +1,31 @@
 const {Router} = require('express');
-const UsersController = require('../../controllers/users.controller');
+const SemestersController = require('../../controllers/semesters.controller');
 // import { checkValidationResult, createValidationFor } from '../../middleware/jobs.validator';
 const router = new Router();
 
 router.route('/create').post(
     // createValidationFor('create'),
-    UsersController.create
+    SemestersController.create
 )
 
 router.route('/list').get(
-    UsersController.getList
+    SemestersController.getList
 )
 
 router.route('/list/all').get(
-    UsersController.getAll
+    SemestersController.getAll
 )
 
 router.route('/deleteMany')
 .delete(
-    UsersController.deleteMany
+    SemestersController.deleteMany
 )
 
 router.route('/:id')
 .delete(
-    UsersController.delete
+    SemestersController.delete
 )
 .put(
-    UsersController.update
+    SemestersController.update
 )
 module.exports = router
